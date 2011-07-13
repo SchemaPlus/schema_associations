@@ -9,16 +9,14 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 
 require 'rspec'
 require 'active_record'
-require 'schema_plus'
+require 'schema_associations'
 require 'connection'
-
-SchemaPlus.insert
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
 RSpec.configure do |config|
-  config.include(SchemaPlusMatchers)
-  config.include(SchemaPlusHelpers)
+  config.include(SchemaAssociationsMatchers)
+  config.include(SchemaAssociationsHelpers)
 end
 
 def load_schema(name)
@@ -28,7 +26,7 @@ def load_schema(name)
 end
 
 def load_core_schema
-  SchemaPlus.setup do |config|
+  SchemaAssociations.setup do |config|
     config.foreign_keys.auto_create = false;
   end
   load_schema('core_schema.rb')
@@ -38,7 +36,7 @@ def load_core_schema
 end
 
 def load_auto_schema
-  SchemaPlus.setup do |config|
+  SchemaAssociations.setup do |config|
     config.foreign_keys.auto_create = true;
   end
   load_schema('auto_schema.rb')

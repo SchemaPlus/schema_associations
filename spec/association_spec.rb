@@ -2,14 +2,10 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe ActiveRecord::Base do
-  include SchemaPlusHelpers
+  include SchemaAssociationsHelpers
 
   after(:each) do
     remove_all_models
-  end
-
-  around(:each) do |example|
-    with_fk_auto_create(&example)
   end
 
   context "in basic case" do
@@ -47,7 +43,7 @@ describe ActiveRecord::Base do
         "comments", {}, { :post_id => {} }
       )
       class Post < ActiveRecord::Base
-        schema_plus :associations => { :auto_create => false }
+        schema_associations :associations => { :auto_create => false }
       end
       class Comment < ActiveRecord::Base ; end
       Post.reflect_on_association(:comments).should be_nil
@@ -86,70 +82,70 @@ describe ActiveRecord::Base do
 
     it "should respect :only" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :only => :owner }
+        schema_associations :associations => { :only => :owner }
       end
       check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
     end
 
     it "should respect :except" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :except => :owner }
+        schema_associations :associations => { :except => :owner }
       end
       check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
     end
 
     it "should respect :only_type :belongs_to" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :only_type => :belongs_to }
+        schema_associations :associations => { :only_type => :belongs_to }
       end
       check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
     end
 
     it "should respect :except_type :belongs_to" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :except_type => :belongs_to }
+        schema_associations :associations => { :except_type => :belongs_to }
       end
       check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
     end
 
     it "should respect :only_type :has_many" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :only_type => :has_many }
+        schema_associations :associations => { :only_type => :has_many }
       end
       check_reflections(:owner => false, :colors => false, :parts => true, :manifest => false)
     end
 
     it "should respect :except_type :has_many" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :except_type => :has_many }
+        schema_associations :associations => { :except_type => :has_many }
       end
       check_reflections(:owner => true, :colors => true, :parts => false, :manifest => true)
     end
 
     it "should respect :only_type :has_one" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :only_type => :has_one }
+        schema_associations :associations => { :only_type => :has_one }
       end
       check_reflections(:owner => false, :colors => false, :parts => false, :manifest => true)
     end
 
     it "should respect :except_type :has_one" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :except_type => :has_one }
+        schema_associations :associations => { :except_type => :has_one }
       end
       check_reflections(:owner => true, :colors => true, :parts => true, :manifest => false)
     end
 
     it "should respect :only_type :has_and_belongs_to_many" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :only_type => :has_and_belongs_to_many }
+        schema_associations :associations => { :only_type => :has_and_belongs_to_many }
       end
       check_reflections(:owner => false, :colors => true, :parts => false, :manifest => false)
     end
 
     it "should respect :except_type :has_and_belongs_to_many" do 
       class Widget < ActiveRecord::Base
-        schema_plus :associations => { :except_type => :has_and_belongs_to_many }
+        schema_associations :associations => { :except_type => :has_and_belongs_to_many }
       end
       check_reflections(:owner => true, :colors => false, :parts => true, :manifest => true)
     end
@@ -163,7 +159,7 @@ describe ActiveRecord::Base do
         "comments", {}, { :post_id => {} }
       )
       class Post < ActiveRecord::Base
-        schema_plus :associations => { :auto_create => true }
+        schema_associations :associations => { :auto_create => true }
       end
       class Comment < ActiveRecord::Base ; end
       Post.reflect_on_association(:comments).should_not be_nil
@@ -487,27 +483,17 @@ describe ActiveRecord::Base do
 
   protected
 
-  def with_fk_auto_create(value = true, &block)
-    save = SchemaPlus.config.foreign_keys.auto_create
-    begin
-      SchemaPlus.config.foreign_keys.auto_create = value
-      yield
-    ensure
-      SchemaPlus.config.foreign_keys.auto_create = save
-    end
-  end
-
   def with_associations_auto_create(value, &block)
     with_associations_config(:auto_create => value, &block)
   end
 
   def with_associations_config(opts, &block)
-    save = Hash[opts.keys.collect{|key| [key, SchemaPlus.config.associations.send(key)]}]
+    save = Hash[opts.keys.collect{|key| [key, SchemaAssociations.config.associations.send(key)]}]
     begin
-      SchemaPlus.config.associations.update_attributes(opts)
+      SchemaAssociations.config.associations.update_attributes(opts)
       yield
     ensure
-      SchemaPlus.config.associations.update_attributes(save)
+      SchemaAssociations.config.associations.update_attributes(save)
     end
   end
 

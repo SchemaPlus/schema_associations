@@ -1,4 +1,4 @@
-module SchemaPlusHelpers
+module SchemaAssociationsHelpers
   extend self
 
   def mysql?

@@ -1,1 +1,1 @@
-require 'schema_plus' unless defined?(SchemaPlus)
+require 'schema_associations' unless defined?(SchemaAssociations)
