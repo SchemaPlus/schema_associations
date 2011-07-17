@@ -10,7 +10,9 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'rspec'
 require 'active_record'
 require 'schema_associations'
-require 'connection'
+require 'logger'
+
+ActiveRecord::Base.logger = Logger.new(File.open("spec.log", "w"))
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 

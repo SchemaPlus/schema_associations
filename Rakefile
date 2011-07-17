@@ -2,21 +2,10 @@ require 'bundler'
 Bundler::GemHelper.install_tasks
 
 require 'rspec/core/rake_task'
-%w[postgresql mysql mysql2 sqlite3].each do |adapter|
-  namespace adapter do
-    RSpec::Core::RakeTask.new(:spec) do |spec|
-      spec.rspec_opts = "-Ispec/connections/#{adapter}"
-      spec.fail_on_error = false
-    end
-  end
+RSpec::Core::RakeTask.new(:spec) do |spec|
+  spec.rspec_opts = '-Ispec'
 end
 
-desc 'Run postgresql, mysql2 and sqlite3 tests'
-task :spec do 
-  %w[postgresql mysql mysql2 sqlite3].each do |adapter|
-    Rake::Task["#{adapter}:spec"].invoke
-  end
-end
 
 task :default => :spec
 
