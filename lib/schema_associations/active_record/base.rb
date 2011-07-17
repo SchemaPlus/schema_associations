@@ -10,7 +10,7 @@ module SchemaAssociations
         base.extend(SchemaAssociations::ActiveRecord::Associations)
       end
 
-      module ClassMethods #:nodoc:
+      module ClassMethods
         def self.extended(base) #:nodoc:
         end
 
@@ -18,7 +18,7 @@ module SchemaAssociations
 
         # Per-model override of Config options.  Use via, e.g.
         #     class MyModel < ActiveRecord::Base
-        #         schema_associations :associations => { :auto_create => false }
+        #         schema_associations :auto_create => false
         #     end
         def schema_associations(opts)
           @schema_associations_config = SchemaAssociations.config.merge(opts)

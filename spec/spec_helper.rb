@@ -29,7 +29,7 @@ end
 
 def load_core_schema
   SchemaAssociations.setup do |config|
-    config.foreign_keys.auto_create = false;
+    config.auto_create = false;
   end
   load_schema('core_schema.rb')
   load 'models/user.rb'
@@ -39,7 +39,7 @@ end
 
 def load_auto_schema
   SchemaAssociations.setup do |config|
-    config.foreign_keys.auto_create = true;
+    config.auto_create = true;
   end
   load_schema('auto_schema.rb')
   load 'models/user.rb'

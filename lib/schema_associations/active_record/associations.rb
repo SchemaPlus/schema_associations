@@ -43,7 +43,7 @@ module SchemaAssociations
       def _load_schema_associations_associations #:nodoc:
         return if @schema_associations_associations_loaded
         @schema_associations_associations_loaded = true
-        return unless schema_associations_config.associations.auto_create?
+        return unless schema_associations_config.auto_create?
 
         reverse_foreign_keys.each do | foreign_key |
           if foreign_key.table_name =~ /^#{table_name}_(.*)$/ || foreign_key.table_name =~ /^(.*)_#{table_name}$/
@@ -190,11 +190,11 @@ module SchemaAssociations
       end
 
       def _use_concise_name? #:nodoc:
-        schema_associations_config.associations.concise_names?
+        schema_associations_config.concise_names?
       end
 
       def _filter_association(macro, name) #:nodoc:
-        config = schema_associations_config.associations
+        config = schema_associations_config
         return false if config.only        and not Array.wrap(config.only).include?(name)
         return false if config.except      and     Array.wrap(config.except).include?(name)
         return false if config.only_type   and not Array.wrap(config.only_type).include?(macro)

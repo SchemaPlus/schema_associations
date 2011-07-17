@@ -43,7 +43,7 @@ describe ActiveRecord::Base do
         "comments", {}, { :post_id => {} }
       )
       class Post < ActiveRecord::Base
-        schema_associations :associations => { :auto_create => false }
+        schema_associations :auto_create => false
       end
       class Comment < ActiveRecord::Base ; end
       Post.reflect_on_association(:comments).should be_nil
@@ -82,70 +82,70 @@ describe ActiveRecord::Base do
 
     it "should respect :only" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :only => :owner }
+        schema_associations :only => :owner
       end
       check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
     end
 
     it "should respect :except" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :except => :owner }
+        schema_associations :except => :owner
       end
       check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
     end
 
     it "should respect :only_type :belongs_to" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :only_type => :belongs_to }
+        schema_associations :only_type => :belongs_to
       end
       check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
     end
 
     it "should respect :except_type :belongs_to" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :except_type => :belongs_to }
+        schema_associations :except_type => :belongs_to
       end
       check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
     end
 
     it "should respect :only_type :has_many" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :only_type => :has_many }
+        schema_associations :only_type => :has_many
       end
       check_reflections(:owner => false, :colors => false, :parts => true, :manifest => false)
     end
 
     it "should respect :except_type :has_many" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :except_type => :has_many }
+        schema_associations :except_type => :has_many
       end
       check_reflections(:owner => true, :colors => true, :parts => false, :manifest => true)
     end
 
     it "should respect :only_type :has_one" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :only_type => :has_one }
+        schema_associations :only_type => :has_one
       end
       check_reflections(:owner => false, :colors => false, :parts => false, :manifest => true)
     end
 
     it "should respect :except_type :has_one" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :except_type => :has_one }
+        schema_associations :except_type => :has_one
       end
       check_reflections(:owner => true, :colors => true, :parts => true, :manifest => false)
     end
 
     it "should respect :only_type :has_and_belongs_to_many" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :only_type => :has_and_belongs_to_many }
+        schema_associations :only_type => :has_and_belongs_to_many
       end
       check_reflections(:owner => false, :colors => true, :parts => false, :manifest => false)
     end
 
     it "should respect :except_type :has_and_belongs_to_many" do 
       class Widget < ActiveRecord::Base
-        schema_associations :associations => { :except_type => :has_and_belongs_to_many }
+        schema_associations :except_type => :has_and_belongs_to_many
       end
       check_reflections(:owner => true, :colors => false, :parts => true, :manifest => true)
     end
@@ -159,7 +159,7 @@ describe ActiveRecord::Base do
         "comments", {}, { :post_id => {} }
       )
       class Post < ActiveRecord::Base
-        schema_associations :associations => { :auto_create => true }
+        schema_associations :auto_create => true
       end
       class Comment < ActiveRecord::Base ; end
       Post.reflect_on_association(:comments).should_not be_nil
@@ -488,12 +488,12 @@ describe ActiveRecord::Base do
   end
 
   def with_associations_config(opts, &block)
-    save = Hash[opts.keys.collect{|key| [key, SchemaAssociations.config.associations.send(key)]}]
+    save = Hash[opts.keys.collect{|key| [key, SchemaAssociations.config.send(key)]}]
     begin
-      SchemaAssociations.config.associations.update_attributes(opts)
+      SchemaAssociations.config.update_attributes(opts)
       yield
     ensure
-      SchemaAssociations.config.associations.update_attributes(save)
+      SchemaAssociations.config.update_attributes(save)
     end
   end
 
