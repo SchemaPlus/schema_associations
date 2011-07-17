@@ -177,7 +177,7 @@ module SchemaAssociations
         name = name_concise if _use_concise_name?
         name = name.to_sym
         if (_filter_association(macro, name) && !_method_exists?(name))
-          logger.info "SchemaAssociations associations: #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{opts.inspect[1...-1]}"
+          logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{opts.inspect[1...-1]}"
           send macro, name, opts.dup
         end
       end
