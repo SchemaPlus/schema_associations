@@ -1,4 +1,4 @@
-# encoding: utf-8
+
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe ActiveRecord::Base do
@@ -17,13 +17,40 @@ describe ActiveRecord::Base do
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
     end
-    it "should create belongs_to association" do
+
+    after(:each) do
+      Comment.destroy_all
+      Post.destroy_all
+    end
+
+    it "should create belongs_to association when reflecting on it" do
       reflection = Comment.reflect_on_association(:post)
       reflection.should_not be_nil
       reflection.macro.should == :belongs_to
       reflection.options[:class_name].should == "Post"
       reflection.options[:foreign_key].should == "post_id"
     end
+
+    it "should create association when reflecting on all associations" do
+      reflection = Comment.reflect_on_all_associations.first
+      reflection.should_not be_nil
+      reflection.macro.should == :belongs_to
+      reflection.options[:class_name].should == "Post"
+      reflection.options[:foreign_key].should == "post_id"
+    end
+
+    it "should create association when accessing it" do
+      post = Post.create
+      comment = Comment.create(:post_id => post.id)
+      comment.post.id.should == post.id
+    end
+
+    it "should create association when creating record" do
+      post = Post.create
+      comment = Comment.create(:post => post)
+      comment.reload.post.id.should == post.id
+    end
+
     it "should create has_many association" do
       reflection = Post.reflect_on_association(:comments)
       reflection.should_not be_nil
@@ -490,8 +517,10 @@ describe ActiveRecord::Base do
   def with_associations_config(opts, &block)
     save = Hash[opts.keys.collect{|key| [key, SchemaAssociations.config.send(key)]}]
     begin
-      SchemaAssociations.config.update_attributes(opts)
-      yield
+      SchemaAssociations.setup do |config|
+        config.update_attributes(opts)
+        yield
+      end
     ensure
       SchemaAssociations.config.update_attributes(save)
     end
