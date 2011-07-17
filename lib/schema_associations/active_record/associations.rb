@@ -38,6 +38,18 @@ module SchemaAssociations
         _load_schema_associations_associations
       end
 
+      # Per-model override of Config options.  Use via, e.g.
+      #     class MyModel < ActiveRecord::Base
+      #         schema_associations :auto_create => false
+      #     end
+      def schema_associations(opts)
+        @schema_associations_config = SchemaAssociations.config.merge(opts)
+      end
+
+      def schema_associations_config # :nodoc:
+        @schema_associations_config ||= SchemaAssociations.config.dup
+      end
+
       private
 
       def _load_schema_associations_associations #:nodoc:
