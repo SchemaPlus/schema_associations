@@ -2,7 +2,7 @@ require 'ostruct'
 
 module SchemaAssociations
   module ActiveRecord
-    module Associations
+    module Associations #:nodoc:
 
       module Relation #:nodoc:
         def self.included(base)

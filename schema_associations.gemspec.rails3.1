@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Ronen Barzel", "Michał Łomnicki"]
   s.email       = ["ronen@barzel.org", "michal.lomnicki@gmail.com"]
   s.homepage    = "https://github.com/ronen/schema_associations"
-  s.summary     = "Provides ActiveRecord support for foreign keys, database defined validations and associations."
-  s.description = "SchemaPlus is an ActiveRecord extension that provides support for defining foreign keys and indexes in database migrations and schemas, as well as for defining model validations and associations based on the database."
+  s.summary     = "ActiveRecord extension that automatically (DRY) creates associations based on the schema"
+  s.description = "SchemaAssociations extends ActiveRecord to automatically create associations by inspecting the database schema.  This is more more DRY than the standard behavior, for which in addition to specifying the foreign key in the migration, you must also specify complementary associations in two model files (e.g. a :belongs_to and a :has_many)."
 
   s.rubyforge_project = "schema_associations"
 

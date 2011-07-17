@@ -7,13 +7,18 @@ require 'schema_associations/railtie' if defined?(Rails)
 
 module SchemaAssociations
 
-  # This global configuation options for SchemaAssociations
-  # Set them in +config/initializers/schema_associations.rb+ using:
+  # The configuation options for SchemaAssociations. Set them globally in
+  # +config/initializers/schema_associations.rb+, e.g.:
   #
   #    SchemaAssociations.setup do |config|
-  #       ...
+  #       config.concise_names = false
   #    end
   #
+  # or override them per-model, e.g.:
+  #
+  #     class MyModel < ActiveRecord::Base
+  #        schema_associations.config :concise_names => false
+  #     end
   #
   class Config < Valuable
 
@@ -84,9 +89,9 @@ module SchemaAssociations
   end
 
   # Initialization block is passed a global Config instance that can be
-  # used to configure SchemaAssociations behavior.  E.g., if you want to disable
-  # automation creation of foreign key constraints for columns name *_id,
-  # put the following in config/initializers/schema_associations.rb :
+  # used to configure SchemaAssociations behavior.  E.g., if you want to
+  # disable automation creation associations put the following in
+  # config/initializers/schema_associations.rb :
   #
   #    SchemaAssociations.setup do |config|
   #       config.auto_create = false

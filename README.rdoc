@@ -1,145 +1,86 @@
-= SchemaPlus
+= SchemaAssociations
 
 == Overview
 
-SchemaPlus is an ActiveRecord extension that provides enhanced capabilities for schema definition and querying, including: enhanced and more DRY index capabilities, support and automation for foreign key constraints, and support for views.
+One of the great things about Rails (ActiveRecord, in particular) is that it
+inspects the database and automatically defines accessors for all your
+columns, keeping your model class definitions simple and DRY.  That's great
+for simple data columns, but where it falls down is when your table
+contains references to other tables: then the "accessors" you need are the
++belongs_to+, +has_one+, +has_many+, and +has_and_belongs_to_many+
+associations -- and you need to put them into your model class definitions by hand, which isn't so DRY.
 
-For added rails DRYness see also the gems {+schema_associations+}[http://rubygems.org/gems/schema_associations] and {+schema_validations+}[http://rubygems.org/gems/schema_associations]  <b>IMPORTANT PRERELEASE NOTE: <i>Those are not yet separate gems, they are currently bundled in here.  They're not documented yet though.</i></b>
+Enter the SchemaAssociations gem.  It extends ActiveRecord to automatically
+define the appropriate associations based on foreign key constraints in the
+database.  SchemaAssociations builds on the
+{+schema_plus+}[http://rubygems.org/gems/schema_plus] gem that
+automatically defines foreign key constraints.  So the common case is simple -- if you have this in your migration:
+
+    create_table :posts do |t|
+    end
+
+    create_table :comments do |t|
+      t.integer post_id
+      # ... whatever ...
+    end
+
+Then SchemaAssociations will define the corresponding associations:
+
+    Post.has_many :comments
+    Comment.belongs_to :post
+
+
+== What if I want something special?
+
+You're always free to define associations yourself, if for example you want
+to pass special options.  SchemaAssociations won't clobber any existing
+definitions.
+
+You can also control the behavior with various options, globally via
+SchemaAssociations.setup or per-model via #schema_associations.  See
+SchemaAssociations::Config for the available options.
+
+== Full details
+
+=== The basics
+
+=== Multiple references
+
+=== Concise names
+
+=== How do I know what it did?
 
 == Compatibility
 
-SchemaPlus supports all combinations of:
+SchemaAssociations supports all combinations of:
 * rails 3.0 or 3.1
 * MRI ruby 1.8.7 or 1.9.2
-* Postgres, MySQL (using mysql or mysql2 gem), or Sqlite3
 
 == Installation
 
 Install from http://rubygems.org via
 
-        $ gem install "schema_plus"
+        $ gem install "schema_associations"
 
 or in a Gemfile
 
-        gem "schema_plus"
-
-== Features
-
-Here some examples that show off the high points.  For full details see the
-{RDoc documentation}[http://rubydoc.info/gems/schema_plus].
-
-=== Indexes
-
-With standard rails migrations, you specify indexes separately from the table definition:
-
-    # Standard Rails approach...
-    create_table :parts do |t|
-      t.string :name
-      t.string :product_code
-    end
-
-    add_index :parts, :name     # index repeats table and column names and is defined separately
-    add_index :parts, :product_code, :unique => true
-
-But with SchemaPlus rather than specify your outside your table definition you can specify your indexes when you define each column:
-
-    # More DRY way...
-    create_table :parts do |t|
-      t.string :name,           :index => true
-      t.string :product_code,   :index => :unique
-    end
-
-Options can be provided index using a hash, for example:
-
-    t.string :product_code,     :index => { :unique => true, :name => "my_index_name" }
-
-You can also create multi-column indexes, for example:
-
-    t.string :first_name
-    t.string :last_name,        :index => { :with => :first_name }
-
-    t.string :country_code
-    t.string :area_code
-    t.string :local_number      :index => { :width => [:country_code, :area_code], :unique => true }
-
-If you're using Postgresql, SchemaPlus provides support for conditions, expressions, index methods, and case-insensitive indexes; see doc at SchemaPlus::ActiveRecord::ConnectionAdapters::PostgresqlAdapter and SchemaPlus::ActiveRecord::ConnectionAdapters::IndexDefinition
-
-And when you query column information using ActiveRecord::Base#columns, SchemaPlus analogously provides index information relevant to each column: which indexes reference the column, whether the column must be unique, etc.  See doc at SchemaPlus::ActiveRecord::ConnectionAdapters::Column
-
-=== Foreign Key Constraints
-
-SchemaPlus adds support for foreign key constraints. In fact, for the
-common convention that you name a column with suffix +_id+ to indicate that
-it's a foreign key, SchemaPlus automatically defines the appropriate
-constraint.
-
-You can explicitly specify foreign key constraints, or override the
-automatic ones, using the +:references+ option to specify the table
-name (and optionally that table's key column name, if it's not +id+).
-
-Here are some examples:
-
-    t.integer :author_id                                 # automatically references table 'authors', key id
-    t.integer :parent_id                                 # special name parent_id automatically references its own table (for tree nodes)
-    t.integer :author, :references => :authors           # non-conventional column name needs :references for a constraint
-    t.integer :author_id, :refences => :authors          # same as automatic behavior
-    t.integer :author_id, :refences => [:authors, :id]   # same as automatic behavior
-    t.integer :author_id, :references => :people         # override table name
-    t.integer :author_id, :references => [:people, :ssn] # override table name and key
-    t.integer :author_id, :referencs => nil              # don't create a constraint
-
-
-You can also modify the behavior using +:on_delete+, +:on_update+, and +:deferrable+
-
-    t.integer :author_id, :on_delete => :cascade
-
-The foreign key behavior can be configured globally (see Config) or per-table (see create_table).
-
-To examine your foreign key constraints, connection.foreign_keys returns a
-list of foreign key constraints defined for a given table, and
-connection.reverse_foreign_keys returns a list of foreign key constraints
-that reference a given table.  See SchemaPlus::ActiveRecord::ConnectionAdapters::ForeignKeyDefinition.
-
-=== Views
-
-SchemaPlus provides support for creating and dropping views.  For example:
-
-  create_view :uncommented_posts, "SELECT * FROM posts LEFT OUTER JOIN comments ON comments.post_id = posts.id WHERE comments.id IS NULL"
-  drop_view :uncommented_posts
-
-ActiveRecord works with views the same as with ordinary tables.  That is, for the above view you can define
-
-  class UncommentedPosts < ActiveRecord::Base
-  end
-
+        gem "schema_associations"
 
 == History
 
-* SchemaPlus is derived from several "Red Hill On Rails" plugins
-  originally created by harukizaemon (https://github.com/harukizaemon)
-  with later contributions from 
-  * Michał Łomnicki (https://github.com/mlomnicki)
-  * François Beausoleil (https://github.com/francois)
-  * Greg Barnett (https://github.com/greg-barnett)
-  * Ronen Barzel (https://github.com/ronen)
+* SchemaAssociations is derived from the "Red Hill On Rails" plugin
+ foreign_key_associations originally created by harukizaemon
+  (https://github.com/harukizaemon)
 
-* SchemaPlus was created in 2011 by Michal Lomnicki and Ronen Barzel
-
-
+* SchemaAssociations was created in 2011 by Michal Lomnicki and Ronen Barzel
 
 == Testing
 
-SchemaPlus is tested using rspec.  To run the tests, after you've forked & cloned: Make sure you have Postgresql and MySQL running.  Create database user "schema_plus" with permissions for database "schema_plus_unittest".  Then:
+SchemaAssociations is tested using rspec and sqlite3.  To run the tests, after you've forked & cloned: 
 
-  $ cd schema_plus
+  $ cd schema_associations
   $ bundle install
-  $ rake postgresql:build_databases
-  $ rake mysql:build_databases
-  $ rake postgresql:spec # to run postgresql tests only
-  $ rake mysql:spec # to run mysql tests only
-  $ rake mysql2:spec # to run mysql2 tests only
-  $ rake sqlite3:spec # to run sqlite3 tests only
-  $ rake spec # run all tests
+  $ rake spec
 
 If you're running ruby 1.9.2, code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
