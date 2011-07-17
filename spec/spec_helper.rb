@@ -11,41 +11,11 @@ require 'rspec'
 require 'active_record'
 require 'schema_associations'
 require 'logger'
+require 'connection'
 
 ActiveRecord::Base.logger = Logger.new(File.open("spec.log", "w"))
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
-
-RSpec.configure do |config|
-  config.include(SchemaAssociationsMatchers)
-  config.include(SchemaAssociationsHelpers)
-end
-
-def load_schema(name)
-  ActiveRecord::Migration.suppress_messages do
-    eval(File.read(File.join(File.dirname(__FILE__), 'schema', name)))
-  end
-end
-
-def load_core_schema
-  SchemaAssociations.setup do |config|
-    config.auto_create = false;
-  end
-  load_schema('core_schema.rb')
-  load 'models/user.rb'
-  load 'models/post.rb'
-  load 'models/comment.rb'
-end
-
-def load_auto_schema
-  SchemaAssociations.setup do |config|
-    config.auto_create = true;
-  end
-  load_schema('auto_schema.rb')
-  load 'models/user.rb'
-  load 'models/post.rb'
-  load 'models/comment.rb'
-end
 
 def remove_all_models
     ObjectSpace.each_object(Class) do |c|
