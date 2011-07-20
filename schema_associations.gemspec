@@ -21,8 +21,14 @@ Gem::Specification.new do |s|
 
   s.add_dependency("schema_plus")
       
+  case ENV['SCHEMA_ASSOCIATION_RAILS_VERSION']
+  when '3.0'
+      s.add_development_dependency("rails", "~> 3.0")
+  when '3.1'
+      s.add_development_dependency("rails", ">= 3.1.0.pre1")
+  end
+
   s.add_development_dependency("rake", "~> 0.8.7")
-  s.add_development_dependency("rails", ">= 3.1.0.rc1")
   s.add_development_dependency("rspec")
   s.add_development_dependency("sqlite3")
   s.add_development_dependency("simplecov")
