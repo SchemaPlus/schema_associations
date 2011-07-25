@@ -518,8 +518,8 @@ describe ActiveRecord::Base do
     begin
       SchemaAssociations.setup do |config|
         config.update_attributes(opts)
-        yield
       end
+      yield
     ensure
       SchemaAssociations.config.update_attributes(save)
     end
