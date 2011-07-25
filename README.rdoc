@@ -266,4 +266,4 @@ If you're running ruby 1.9.2, code coverage results will be in coverage/index.ht
 
 == License
 
-This plugin is released under the MIT license.
+This gem is released under the MIT license.
