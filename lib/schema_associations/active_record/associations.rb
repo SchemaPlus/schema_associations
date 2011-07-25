@@ -79,80 +79,22 @@ module SchemaAssociations
         return unless fk.column_names.size == 1
 
         referencing_table_name ||= fk.table_name
-
         column_name = fk.column_names.first
-        reference_name = column_name.sub(/_id$/, '')
+
         references_name = fk.references_table_name.singularize
         referencing_name = referencing_table_name.singularize
 
-        references_class_name = references_name.classify
         referencing_class_name = referencing_name.classify
+        references_class_name = references_name.classify
 
-        references_concise = _concise_name(references_name, referencing_name)
-        referencing_concise = _concise_name(referencing_name, references_name)
-
-        case reference_name
-        when 'parent'
-          belongs_to         = 'parent'
-          belongs_to_concise = 'parent'
-
-          has_one            = 'child'
-          has_one_concise    = 'child'
-
-          has_many           = 'children'
-          has_many_concise   = 'children'
-
-        when references_name
-          belongs_to         = references_name
-          belongs_to_concise = references_concise
-
-          has_one            = referencing_name
-          has_one_concise    = referencing_concise
-
-          has_many           = referencing_name.pluralize
-          has_many_concise   = referencing_concise.pluralize
-
-        when /(.*)_#{references_name}$/, /(.*)_#{references_concise}$/
-          label = $1
-          belongs_to         = "#{label}_#{references_name}"
-          belongs_to_concise = "#{label}_#{references_concise}"
-
-          has_one            = "#{referencing_name}_as_#{label}"
-          has_one_concise    = "#{referencing_concise}_as_#{label}"
-
-          has_many           = "#{referencing_name.pluralize}_as_#{label}"
-          has_many_concise   = "#{referencing_concise.pluralize}_as_#{label}"
-
-        when /^#{references_name}_(.*)$/, /^#{references_concise}_(.*)$/
-          label = $1
-          belongs_to            = "#{references_name}_#{label}"
-          belongs_to_concise    = "#{references_concise}_#{label}"
-
-          has_one               = "#{referencing_name}_as_#{label}"
-          has_one_concise       = "#{referencing_concise}_as_#{label}"
-
-          has_many              = "#{referencing_name.pluralize}_as_#{label}"
-          has_many_concise      = "#{referencing_concise.pluralize}_as_#{label}"
-
-        else
-          belongs_to            = reference_name
-          belongs_to_concise    = reference_name
-
-          has_one               = "#{referencing_name}_as_#{reference_name}"
-          has_one_concise       = "#{referencing_concise}_as_#{reference_name}"
-
-          has_many              = "#{referencing_name.pluralize}_as_#{reference_name}"
-          has_many_concise      = "#{referencing_concise.pluralize}_as_#{reference_name}"
-        end
+        names = _determine_association_names(column_name.sub(/_id$/, ''), referencing_name, references_name)
 
         case macro
         when :has_and_belongs_to_many
-          name = has_many
-          name_concise = has_many_concise
+          name = names[:has_many]
           opts = {:class_name => referencing_class_name, :join_table => fk.table_name, :foreign_key => column_name}
         when :belongs_to
-          name = belongs_to
-          name_concise = belongs_to_concise
+          name = names[:belongs_to]
           opts = {:class_name => references_class_name, :foreign_key => column_name}
         when :has_one_or_many
           opts = {:class_name => referencing_class_name, :foreign_key => column_name}
@@ -163,23 +105,64 @@ module SchemaAssociations
           # harder to debug.
           if connection.indexes(referencing_table_name, "#{referencing_table_name} Indexes").any?{|index| index.unique && index.columns == [column_name]}
             macro = :has_one
-            name = has_one
-            name_concise = has_one_concise
+            name = names[:has_one]
           else
             macro = :has_many
-            name = has_many
-            name_concise = has_many_concise
+            name = names[:has_many]
             if connection.columns(referencing_table_name, "#{referencing_table_name} Columns").any?{ |col| col.name == 'position' }
               opts[:order] = :position
             end
           end
         end
-        name = name_concise if _use_concise_name?
-        name = name.to_sym
         if (_filter_association(macro, name) && !_method_exists?(name))
           logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{opts.inspect[1...-1]}"
           send macro, name, opts.dup
         end
+      end
+
+      def _determine_association_names(reference_name, referencing_name, references_name)
+
+        references_concise = _concise_name(references_name, referencing_name)
+        referencing_concise = _concise_name(referencing_name, references_name)
+
+        if _use_concise_name?
+          references = references_concise
+          referencing = referencing_concise
+        else
+          references = references_name
+          referencing = referencing_name
+        end
+
+        case reference_name
+        when 'parent'
+          belongs_to         = 'parent'
+          has_one            = 'child'
+          has_many           = 'children'
+
+        when references_name
+          belongs_to         = references
+          has_one            = referencing
+          has_many           = referencing.pluralize
+
+        when /(.*)_#{references_name}$/, /(.*)_#{references_concise}$/
+          label = $1
+          belongs_to         = "#{label}_#{references}"
+          has_one            = "#{referencing}_as_#{label}"
+          has_many           = "#{referencing.pluralize}_as_#{label}"
+
+        when /^#{references_name}_(.*)$/, /^#{references_concise}_(.*)$/
+          label = $1
+          belongs_to         = "#{references}_#{label}"
+          has_one            = "#{referencing}_as_#{label}"
+          has_many           = "#{referencing.pluralize}_as_#{label}"
+
+        else
+          belongs_to         = reference_name
+          has_one            = "#{referencing}_as_#{reference_name}"
+          has_many           = "#{referencing.pluralize}_as_#{reference_name}"
+        end
+
+        { :belongs_to => belongs_to.to_sym, :has_one => has_one.to_sym, :has_many => has_many.to_sym }
       end
 
       def _concise_name(string, other) #:nodoc:
