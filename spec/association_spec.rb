@@ -489,22 +489,25 @@ describe ActiveRecord::Base do
     end
   end
 
-  context "regarding relations" do
-    before(:each) do
-      create_tables(
-        "posts", {}, {},
-        "comments", {}, { :post_id => {} }
-      )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+  if defined? ::ActiveRecord::Relation
+
+    context "regarding relations" do
+      before(:each) do
+        create_tables(
+          "posts", {}, {},
+          "comments", {}, { :post_id => {} }
+        )
+        class Post < ActiveRecord::Base ; end
+        class Comment < ActiveRecord::Base ; end
+      end
+
+      it "should define associations before needed by relation" do
+        Post.joins(:comments).all
+        expect { Post.joins(:comments).all }.should_not raise_error
+
+      end
+
     end
-
-    it "should define associations before needed by relation" do
-      Post.joins(:comments).all
-      expect { Post.joins(:comments).all }.should_not raise_error
-
-    end
-
   end
 
   protected

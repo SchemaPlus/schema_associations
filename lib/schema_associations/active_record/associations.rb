@@ -20,7 +20,7 @@ module SchemaAssociations
           alias_method_chain :reflect_on_association, :schema_associations
           alias_method_chain :reflect_on_all_associations, :schema_associations
         end
-        ::ActiveRecord::Relation.send :include, Relation
+        ::ActiveRecord::Relation.send :include, Relation if defined? ::ActiveRecord::Relation
       end
 
       def reflect_on_association_with_schema_associations(*args) #:nodoc:
