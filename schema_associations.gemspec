@@ -21,7 +21,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency("schema_plus")
       
-  case ENV['SCHEMA_ASSOCIATION_RAILS_VERSION']
+  case ENV['SCHEMA_ASSOCIATIONS_RAILS_VERSION']
   when '3.0'
       s.add_development_dependency("rails", "~> 3.0")
   when '3.1'
