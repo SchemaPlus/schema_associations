@@ -227,7 +227,7 @@ use cases that you logged).
 == Compatibility
 
 SchemaAssociations supports all combinations of:
-* rails 3.0 or 3.1 (prerelease)
+* rails 2.3, 3.0 or 3.1 (prerelease)
 * MRI ruby 1.8.7 or 1.9.2
 
 == Installation
