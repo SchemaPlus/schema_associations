@@ -42,8 +42,26 @@ module SchemaAssociations
       #     class MyModel < ActiveRecord::Base
       #         schema_associations :auto_create => false
       #     end
-      def schema_associations(opts)
-        @schema_associations_config = SchemaAssociations.config.merge(opts)
+      #
+      # If <tt>:auto_create</tt> is not specified, it is implicitly
+      # specified as true.  This allows the "non-invasive" style of using
+      # SchemaAssociations in which you set the global Config to
+      # <tt>auto_create = false</tt>, then in any model that you want auto
+      # associations you simply do:
+      #
+      #     class MyModel < ActiveRecord::Base
+      #         schema_associations
+      #     end
+      #
+      #  Of course other options can be passed, such as
+      #
+      #     class MyModel < ActiveRecord::Base
+      #         schema_associations :concise_names => false, :except_type => :has_and_belongs_to_many
+      #     end
+      #
+      #
+      def schema_associations(opts={})
+        @schema_associations_config = SchemaAssociations.config.merge({:auto_create => true}.merge(opts))
       end
 
       def schema_associations_config # :nodoc:

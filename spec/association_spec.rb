@@ -178,7 +178,7 @@ describe ActiveRecord::Base do
 
   end
 
-  it "should override auto_create positively" do
+  it "should override auto_create positively explicitly" do
     with_associations_auto_create(false) do
       create_tables(
         "posts", {}, {},
@@ -186,6 +186,21 @@ describe ActiveRecord::Base do
       )
       class Post < ActiveRecord::Base
         schema_associations :auto_create => true
+      end
+      class Comment < ActiveRecord::Base ; end
+      Post.reflect_on_association(:comments).should_not be_nil
+      Comment.reflect_on_association(:post).should be_nil
+    end
+  end
+
+  it "should override auto_create positively implicitly" do
+    with_associations_auto_create(false) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {} }
+      )
+      class Post < ActiveRecord::Base
+        schema_associations
       end
       class Comment < ActiveRecord::Base ; end
       Post.reflect_on_association(:comments).should_not be_nil

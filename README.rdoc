@@ -44,15 +44,36 @@ Then all you need for your models is:
 
 and SchemaAssociations defines the appropriate associations under the hood
 
-== What if I want something special?
+=== What if I want something special?
 
 You're always free to define associations yourself, if for example you want
 to pass special options.  SchemaAssociations won't clobber any existing
 definitions.
 
 You can also control the behavior with various options, globally via
-SchemaAssociations::setup or per-model via SchemaAssociations::ActiveRecord#schema_associations.  See
-SchemaAssociations::Config for the available options.
+SchemaAssociations::setup or per-model via SchemaAssociations::ActiveRecord#schema_associations, such as:
+
+    class Post < ActiveRecord::Base
+        schema_associations :concise_names => false
+    end
+
+See SchemaAssociations::Config for the available options.
+
+=== This seems cool, but I'm worried about too much automagic
+
+You can globally turn off automatic creation in <tt>config/initializers/schema_associations.rb</tt>:
+
+  SchemaAssociations.setup do |config|
+    config.auto_create = false
+  end
+
+Then in any model where you want automatic associations, just do
+
+  class Post < ActiveRecord::Base
+    schema_associations
+  end
+
+You can also pass options as per above.
 
 == Full Details
 
