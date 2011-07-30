@@ -232,6 +232,22 @@ i.e. these associations would be defined:
 
 If you like the formality of using full names for the asociations, you can turn off concise names globally or per-model, see SchemaAssociations::Config
 
+=== Ordering +has_many+ using +position+
+
+If the target of a +has_many+ association has a column named +position+, SchemaAssociation will specify <tt>:order => :position</tt> for the association.  That is,
+
+    create_table :comments do |t|
+        t.integer post_id
+        t.integer position
+    end
+
+leads to
+
+    class Post < ActiveRecord::Base
+      has_many :comments, :order => :position
+    end
+
+
 == How do I know what it did?
 
 If you're curious (or dubious) about what associations SchemaAssociations defines, you can check the log file.  For every assocation that SchemaAssociations defines, it generates an info entry such as
