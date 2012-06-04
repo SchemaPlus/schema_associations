@@ -110,6 +110,7 @@ PLATFORMS
 DEPENDENCIES
   rails (~> 3.2.0)
   rake
+  rdoc
   rspec
   schema_associations!
   simplecov
