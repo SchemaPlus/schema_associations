@@ -1,5 +1,12 @@
 = SchemaAssociations
 
+SchemaAssiciations is an ActiveRecord extension that keeps your model class
+definitions simpler and more DRY, by automatically defining associations
+based on the database schema.
+
+{<img src="https://secure.travis-ci.org/lomba/schema_associations.png"/>}[http://travis-ci.org/lomba/schema_associations]
+{<img src="https://gemnasium.com/lomba/schema_associations.png" alt="Dependency Status" />}[https://gemnasium.com/lomba/schema_associations]
+
 == Overview
 
 One of the great things about Rails (ActiveRecord, in particular) is that it
@@ -88,7 +95,7 @@ relationship using standard naming conventions:
         t.integer post_id
     end
 
-    # models:
+    # schema_associations defines:
 
     class Post < ActiveRecord::Base
         has_many :comments
@@ -106,7 +113,7 @@ For a one-to-one relationship:
         t.integer post_id, :index => :unique    # (using the :index option provided by schema_plus )
     end
 
-    # models:
+    # schema_associations defines:
 
     class Post < ActiveRecord::Base
         has_one :comment
@@ -124,6 +131,8 @@ And for many-to-many relationships:
         integer :group_id
         integer :member_id
     end
+
+    # schema_associations defines:
 
     class Group < ActiveReocrd::Base
         has_and_belongs_to_many :members
@@ -263,9 +272,9 @@ use cases that you logged).
 
 == Compatibility
 
-SchemaAssociations supports all combinations of:
-* rails 2.3, 3.0 or 3.1 (prerelease)
-* MRI ruby 1.8.7 or 1.9.2
+SchemaAssociations supports all valid combinations of:
+* rails 2.3, 3.0, or 3.2
+* MRI ruby 1.8.7 or 1.9.2 or 1.9.3
 
 == Installation
 
@@ -289,11 +298,10 @@ full combo of tests, after you've forked & cloned:
 
 See <tt>./runspecs --help</tt> for other options.  You can also pick a specific version of rails and ruby to use, such as:
   $ rvm use 1.9.2
-  $ export SCHEMA_ASSOCIATIONS_RAILS_VERSION=3.1
-  $ bundle update rails --local
+  $ export BUNDLE_GEMFILE=gemfiles/Gemfile.rails-3.1
   $ rake spec
 
-If you're running ruby 1.9.2, code coverage results will be in coverage/index.html -- it should be at 100% coverage.
+If you're running ruby 1.9, code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
 == History
 
