@@ -22,6 +22,7 @@ def remove_all_models
       next unless c.ancestors.include? ActiveRecord::Base
       next if c == ActiveRecord::Base
       next if c.name.blank?
+      c.destroy_all rescue nil
       ActiveSupport::Dependencies.remove_constant c.name
     end
   end

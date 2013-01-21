@@ -114,8 +114,14 @@ module SchemaAssociations
         when :belongs_to
           name = names[:belongs_to]
           opts = {:class_name => references_class_name, :foreign_key => column_name}
+          if connection.indexes(fk.references_table_name, "#{fk.references_table_name} Indexes").any?{|index| index.unique && index.columns == [column_name]}
+            opts[:inverse_of] = names[:has_one]
+          else
+            opts[:inverse_of] = names[:has_many]
+          end
+
         when :has_one_or_many
-          opts = {:class_name => referencing_class_name, :foreign_key => column_name}
+          opts = {:class_name => referencing_class_name, :foreign_key => column_name, :inverse_of => names[:belongs_to]}
           # use connection.indexes and connection.colums rather than class
           # methods of the referencing class because using the class
           # methods would require getting the class -- which might trigger

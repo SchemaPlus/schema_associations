@@ -17,17 +17,13 @@ describe ActiveRecord::Base do
       class Comment < ActiveRecord::Base ; end
     end
 
-    after(:each) do
-      Comment.destroy_all
-      Post.destroy_all
-    end
-
     it "should create belongs_to association when reflecting on it" do
       reflection = Comment.reflect_on_association(:post)
       reflection.should_not be_nil
       reflection.macro.should == :belongs_to
       reflection.options[:class_name].should == "Post"
       reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :comments
     end
 
     it "should create association when reflecting on all associations" do
@@ -36,6 +32,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :belongs_to
       reflection.options[:class_name].should == "Post"
       reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :comments
     end
 
     it "should create association when accessing it" do
@@ -56,6 +53,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :has_many
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :post
     end
     it "shouldn't raise an exception when model is instantiated" do
       expect { Post.new }.to_not raise_error
@@ -227,6 +225,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :has_one
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :post
     end
   end
 
@@ -245,6 +244,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :belongs_to
       reflection.options[:class_name].should == "Post"
       reflection.options[:foreign_key].should == "subject_post_id"
+      reflection.options[:inverse_of].should == :comments_as_subject
     end
 
     it "should name has_many using 'as column'" do
@@ -253,6 +253,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :has_many
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "subject_post_id"
+      reflection.options[:inverse_of].should == :subject_post
     end
   end
 
@@ -271,6 +272,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :belongs_to
       reflection.options[:class_name].should == "Post"
       reflection.options[:foreign_key].should == "post_cited"
+      reflection.options[:inverse_of].should == :comments_as_cited
     end
 
     it "should name has_many using 'as column'" do
@@ -279,6 +281,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :has_many
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "post_cited"
+      reflection.options[:inverse_of].should == :post_cited
     end
   end
 
@@ -297,6 +300,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :belongs_to
       reflection.options[:class_name].should == "Post"
       reflection.options[:foreign_key].should == "subject"
+      reflection.options[:inverse_of].should == :comments_as_subject
     end
 
     it "should name has_many using 'as column'" do
@@ -305,6 +309,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :has_many
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "subject"
+      reflection.options[:inverse_of].should == :subject
     end
   end
 
@@ -324,6 +329,7 @@ describe ActiveRecord::Base do
       reflection.macro.should == :has_many
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :post
       reflection.options[:order].to_s.should == "position"
     end
   end
@@ -392,6 +398,7 @@ describe ActiveRecord::Base do
         reflection.macro.should == :has_many
         reflection.options[:class_name].should == "PostComment"
         reflection.options[:foreign_key].should == "post_id"
+        reflection.options[:inverse_of].should == :post
       end
     end
 
@@ -403,6 +410,7 @@ describe ActiveRecord::Base do
         reflection.macro.should == :has_many
         reflection.options[:class_name].should == "CommentPost"
         reflection.options[:foreign_key].should == "post_id"
+        reflection.options[:inverse_of].should == :post
       end
     end
 
@@ -414,6 +422,7 @@ describe ActiveRecord::Base do
         reflection.macro.should == :has_many
         reflection.options[:class_name].should == "BlogPageComment"
         reflection.options[:foreign_key].should == "blog_page_post_id"
+        reflection.options[:inverse_of].should == :post
       end
     end
 
@@ -425,6 +434,7 @@ describe ActiveRecord::Base do
         reflection.macro.should == :has_many
         reflection.options[:class_name].should == "PostComment"
         reflection.options[:foreign_key].should == "post_id"
+        reflection.options[:inverse_of].should == :post
         reflection = Post.reflect_on_association(:comments)
         reflection.should be_nil
       end
@@ -438,6 +448,7 @@ describe ActiveRecord::Base do
         reflection.macro.should == :has_many
         reflection.options[:class_name].should == "PostComment"
         reflection.options[:foreign_key].should == "post_id"
+        reflection.options[:inverse_of].should == :post
         reflection = Post.reflect_on_association(:post_comments)
         reflection.should be_nil
       end
@@ -521,7 +532,7 @@ describe ActiveRecord::Base do
 
       it "should define associations before needed by relation" do
         Post.joins(:comments).all
-        expect { Post.joins(:comments).all }.should_not raise_error
+        expect { Post.joins(:comments).all }.to_not raise_error
 
       end
 

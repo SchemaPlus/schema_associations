@@ -14,16 +14,17 @@ it inspects the database and automatically defines accessors for all your
 columns, keeping your model class definitions simple and DRY.  That's great
 for simple data columns, but where it falls down is when your table
 contains references to other tables: then the "accessors" you need are the
-+belongs_to+, +has_one+, +has_many+, and +has_and_belongs_to_many+
-associations -- and you need to put them into your model class definitions
-by hand.  In fact, for every relation, you need to define two associations, such as
+associations defined using +belongs_to+, +has_one+, +has_many+, and
++has_and_belongs_to_many+ -- and you need to put them into your model class
+definitions by hand.  In fact, for every relation, you need to define two
+associations each listing its inverse, such as
 
     class Post < ActiveRecord::Base
-        has_many :commens
+        has_many :comments, :inverse_of => :post
     end
 
     class Comment < ActiveReocrd::Base
-        belongs_to :post
+        belongs_to :post, :inverse_of => :comments
     end
 
 ....which isn't so DRY.
@@ -309,6 +310,8 @@ If you're running ruby 1.9, code coverage results will be in coverage/index.html
 == Release notes:
 
 === master (to be released as 1.0.0)
+
+* Use :inverse_of in generated associations
 
 * Drop support for ruby 1.8.7 and rails < 3.2
 
