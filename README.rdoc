@@ -9,8 +9,8 @@ based on the database schema.
 
 == Overview
 
-One of the great things about Rails (ActiveRecord, in particular) is that it
-inspects the database and automatically defines accessors for all your
+One of the great things about Rails (ActiveRecord, in particular) is that
+it inspects the database and automatically defines accessors for all your
 columns, keeping your model class definitions simple and DRY.  That's great
 for simple data columns, but where it falls down is when your table
 contains references to other tables: then the "accessors" you need are the
@@ -49,7 +49,7 @@ Then all you need for your models is:
     class Comment < ActiveRecord::Base
     end
 
-and SchemaAssociations defines the appropriate associations under the hood
+and SchemaAssociations defines the appropriate associations under the hood.
 
 === What if I want something special?
 
@@ -276,6 +276,8 @@ SchemaAssociations supports all combinations of:
 * rails 3.2
 * MRI ruby 1.9.2 or 1.9.3
 
+Note: As of version 1.0.0, ruby 1.8.7 and rails < 3.2 are no longer supported.  The last version to support them is 0.1.2
+
 == Installation
 
 Install from http://rubygems.org via
@@ -303,6 +305,12 @@ you can do, e.g.
   $ ./runspecs [other options] --rspec -- spec/association_spec.rb -e 'base'
 
 If you're running ruby 1.9, code coverage results will be in coverage/index.html -- it should be at 100% coverage.
+
+== Release notes:
+
+=== master (to be released as 1.0.0)
+
+* Drop support for ruby 1.8.7 and rails < 3.2
 
 == History
 
