@@ -296,10 +296,11 @@ full combo of tests, after you've forked & cloned:
   $ ./runspecs --install  # do this once to install gem dependencies for all versions (slow)
   $ ./runspecs # as many times as you like
 
-See <tt>./runspecs --help</tt> for other options.  You can also pick a specific version of rails and ruby to use, such as:
-  $ rvm use 1.9.2
-  $ export BUNDLE_GEMFILE=gemfiles/Gemfile.rails-3.1
-  $ rake spec
+See <tt>./runspecs --help</tt> for more options.  In particular, to run
+rspec on a specific file or example (rather than running the full suite)
+you can do, e.g.
+
+  $ ./runspecs [other options] --rspec -- spec/association_spec.rb -e 'base'
 
 If you're running ruby 1.9, code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
