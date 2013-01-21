@@ -309,7 +309,7 @@ If you're running ruby 1.9, code coverage results will be in coverage/index.html
 
 == Release notes:
 
-=== master (to be released)
+=== 1.0.1
 
 * Bug fix: use singular :inverse_of for :belongs_to of a :has_one 
 
