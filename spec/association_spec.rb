@@ -227,6 +227,14 @@ describe ActiveRecord::Base do
       reflection.options[:foreign_key].should == "post_id"
       reflection.options[:inverse_of].should == :post
     end
+    it "should create belongs_to association with singular inverse" do
+      reflection = Comment.reflect_on_association(:post)
+      reflection.should_not be_nil
+      reflection.macro.should == :belongs_to
+      reflection.options[:class_name].should == "Post"
+      reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :comment
+    end
   end
 
   context "with prefixed column names" do

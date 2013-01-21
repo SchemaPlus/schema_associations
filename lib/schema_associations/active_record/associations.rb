@@ -114,7 +114,7 @@ module SchemaAssociations
         when :belongs_to
           name = names[:belongs_to]
           opts = {:class_name => references_class_name, :foreign_key => column_name}
-          if connection.indexes(fk.references_table_name, "#{fk.references_table_name} Indexes").any?{|index| index.unique && index.columns == [column_name]}
+          if connection.indexes(referencing_table_name).any?{|index| index.unique && index.columns == [column_name]}
             opts[:inverse_of] = names[:has_one]
           else
             opts[:inverse_of] = names[:has_many]
@@ -127,13 +127,13 @@ module SchemaAssociations
           # methods would require getting the class -- which might trigger
           # an autoload which could start some recursion making things much
           # harder to debug.
-          if connection.indexes(referencing_table_name, "#{referencing_table_name} Indexes").any?{|index| index.unique && index.columns == [column_name]}
+          if connection.indexes(referencing_table_name).any?{|index| index.unique && index.columns == [column_name]}
             macro = :has_one
             name = names[:has_one]
           else
             macro = :has_many
             name = names[:has_many]
-            if connection.columns(referencing_table_name, "#{referencing_table_name} Columns").any?{ |col| col.name == 'position' }
+            if connection.columns(referencing_table_name).any?{ |col| col.name == 'position' }
               opts[:order] = :position
             end
           end
