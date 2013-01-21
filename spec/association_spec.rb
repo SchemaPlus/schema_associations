@@ -58,22 +58,7 @@ describe ActiveRecord::Base do
       reflection.options[:foreign_key].should == "post_id"
     end
     it "shouldn't raise an exception when model is instantiated" do
-      expect { Post.new }.should_not raise_error
-    end
-  end
-
-  it "should override auto_create negatively" do
-    with_associations_auto_create(true) do
-      create_tables(
-        "posts", {}, {},
-        "comments", {}, { :post_id => {} }
-      )
-      class Post < ActiveRecord::Base
-        schema_associations :auto_create => false
-      end
-      class Comment < ActiveRecord::Base ; end
-      Post.reflect_on_association(:comments).should be_nil
-      Comment.reflect_on_association(:post).should_not be_nil
+      expect { Post.new }.to_not raise_error
     end
   end
 
@@ -178,33 +163,51 @@ describe ActiveRecord::Base do
 
   end
 
-  it "should override auto_create positively explicitly" do
-    with_associations_auto_create(false) do
-      create_tables(
-        "posts", {}, {},
-        "comments", {}, { :post_id => {} }
-      )
-      class Post < ActiveRecord::Base
-        schema_associations :auto_create => true
+  context "overrides" do
+    it "should override auto_create negatively" do
+      with_associations_auto_create(true) do
+        create_tables(
+          "posts", {}, {},
+          "comments", {}, { :post_id => {} }
+        )
+        class Post < ActiveRecord::Base
+          schema_associations :auto_create => false
+        end
+        class Comment < ActiveRecord::Base ; end
+        Post.reflect_on_association(:comments).should be_nil
+        Comment.reflect_on_association(:post).should_not be_nil
       end
-      class Comment < ActiveRecord::Base ; end
-      Post.reflect_on_association(:comments).should_not be_nil
-      Comment.reflect_on_association(:post).should be_nil
     end
-  end
 
-  it "should override auto_create positively implicitly" do
-    with_associations_auto_create(false) do
-      create_tables(
-        "posts", {}, {},
-        "comments", {}, { :post_id => {} }
-      )
-      class Post < ActiveRecord::Base
-        schema_associations
+
+    it "should override auto_create positively explicitly" do
+      with_associations_auto_create(false) do
+        create_tables(
+          "posts", {}, {},
+          "comments", {}, { :post_id => {} }
+        )
+        class Post < ActiveRecord::Base
+          schema_associations :auto_create => true
+        end
+        class Comment < ActiveRecord::Base ; end
+        Post.reflect_on_association(:comments).should_not be_nil
+        Comment.reflect_on_association(:post).should be_nil
       end
-      class Comment < ActiveRecord::Base ; end
-      Post.reflect_on_association(:comments).should_not be_nil
-      Comment.reflect_on_association(:post).should be_nil
+    end
+
+    it "should override auto_create positively implicitly" do
+      with_associations_auto_create(false) do
+        create_tables(
+          "posts", {}, {},
+          "comments", {}, { :post_id => {} }
+        )
+        class Post < ActiveRecord::Base
+          schema_associations
+        end
+        class Comment < ActiveRecord::Base ; end
+        Post.reflect_on_association(:comments).should_not be_nil
+        Comment.reflect_on_association(:post).should be_nil
+      end
     end
   end
 
