@@ -309,7 +309,7 @@ If you're running ruby 1.9, code coverage results will be in coverage/index.html
 
 == Release notes:
 
-=== master (to be released as 1.0.0)
+=== 1.0.0
 
 * Use :inverse_of in generated associations
 
