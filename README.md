@@ -355,6 +355,10 @@ coverage/index.html -- it should be at 100% coverage.
 
 ## Release notes:
 
+### 1.1.0
+
+* New feature: `config.table_prefix_map`
+
 ### 1.0.1
 
 *   Bug fix: use singular :inverse_of for :belongs_to of a :has_one 
