@@ -102,8 +102,8 @@ module SchemaAssociations
         references_name = fk.references_table_name.singularize
         referencing_name = referencing_table_name.singularize
 
-        referencing_class_name = referencing_name.classify
-        references_class_name = references_name.classify
+        referencing_class_name = _get_class_name(referencing_name)
+        references_class_name = _get_class_name(references_name)
 
         names = _determine_association_names(column_name.sub(/_id$/, ''), referencing_name, references_name)
 
@@ -219,6 +219,16 @@ module SchemaAssociations
         return false if config.only_type   and not Array.wrap(config.only_type).include?(macro)
         return false if config.except_type and     Array.wrap(config.except_type).include?(macro)
         return true
+      end
+
+      def _get_class_name(name) #:nodoc:
+        name = name.dup
+        found = schema_associations_config.table_prefix_map.find { |table_prefix, class_prefix|
+          name.sub! %r[\A#{table_prefix}], ''
+        }
+        name = name.classify
+        name = found.last + name if found
+        name
       end
 
       def _method_exists?(name) #:nodoc:

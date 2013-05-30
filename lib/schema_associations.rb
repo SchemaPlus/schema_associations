@@ -66,13 +66,20 @@ module SchemaAssociations
     # +:has_and_belongs_to_many+, or +nil+.  Default is +nil+.
     has_value :only_type, :default => nil
 
+    ##
+    # :attr_accessor: table_prefix_map
+    #
+    # Hash whose keys are possible matches at the start of table names, and
+    # whose corresponding values are the prefix to use in front of class
+    # names.
+    has_value :table_prefix_map, :default => {}
+
     def dup #:nodoc:
       self.class.new(Hash[attributes.collect{ |key, val| [key, Valuable === val ?  val.class.new(val.attributes) : val] }])
     end
 
     def update_attributes(opts)#:nodoc:
       opts = opts.dup
-      opts.keys.each { |key| self.send(key).update_attributes(opts.delete(key)) if self.class.attributes.include? key and Hash === opts[key] }
       super(opts)
       self
     end

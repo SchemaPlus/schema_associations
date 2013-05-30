@@ -321,6 +321,19 @@ describe ActiveRecord::Base do
     end
   end
 
+  it "maps table prefix" do
+    with_associations_config(:table_prefix_map => { "wooga_" => "Happy"} ) do
+      create_tables(
+        "wooga_posts", {}, {},
+        "wooga_comments", {}, { :wooga_post_id => { :references => :wooga_posts} }
+      )
+      class HappyPost < ActiveRecord::Base ; self.table_name = 'wooga_posts' ; end
+      class HappyComment < ActiveRecord::Base ; self.table_name = 'wooga_comments' ; end
+      Kernel.warn HappyPost.reflect_on_all_associations.inspect
+      HappyComment.reflect_on_association(:post).class_name.should == "HappyPost"
+      HappyPost.reflect_on_association(:comments).class_name.should == "HappyComment"
+    end
+  end
 
   context "with position" do
     before(:each) do
