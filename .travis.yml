@@ -4,7 +4,9 @@ rvm:
   - 2.0.0
 gemfile:
   - gemfiles/Gemfile.rails-3.2
+  - gemfiles/Gemfile.rails-4.0
 notifications:
   recipients:
     - michal.lomnicki@gmail.com
     - ronen@barzel.org
+    - toby@ovod-everett.org
