@@ -10,7 +10,7 @@ module SchemaAssociations
         end
 
         def initialize_with_schema_associations(klass, *args)
-          klass.send :_load_schema_associations_associations
+          klass.send :_load_schema_associations_associations unless klass.nil?
           initialize_without_schema_associations(klass, *args)
         end
       end

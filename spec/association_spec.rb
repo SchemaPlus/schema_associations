@@ -386,6 +386,40 @@ describe ActiveRecord::Base do
     end
   end
 
+  context "with scope that doesn't use include" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {}, :position => {} }
+      )
+      class Post < ActiveRecord::Base ; end
+      class Comment < ActiveRecord::Base
+        scope :simple_scope, lambda { order(:id) }
+      end
+    end
+    it "should create viable scope" do
+      relation = Comment.simple_scope
+      expect { relation.to_a }.to_not raise_error
+    end
+  end
+
+  context "with scope that uses include" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {}, :position => {} }
+      )
+      class Post < ActiveRecord::Base ; end
+      class Comment < ActiveRecord::Base
+        scope :simple_scope, lambda { order(:id).includes(:post) }
+      end
+    end
+    it "should create viable scope" do
+      relation = Comment.simple_scope
+      expect { relation.to_a }.to_not raise_error
+    end
+  end
+
   context "regarding parent-child relationships" do
 
     let (:migration) {ActiveRecord::Migration}
@@ -582,16 +616,8 @@ describe ActiveRecord::Base do
         class Comment < ActiveRecord::Base ; end
       end
 
-      if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-        it "should define associations before needed by relation" do
-          Post.joins(:comments).all
-          expect { Post.joins(:comments).all }.to_not raise_error
-        end
-      else
-        it "should define associations before needed by relation" do
-          Post.joins(:comments).to_a
-          expect { Post.joins(:comments).to_a }.to_not raise_error
-        end
+      it "should define associations before needed by relation" do
+        expect { Post.joins(:comments).to_a }.to_not raise_error
       end
     end
   end
