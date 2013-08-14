@@ -68,7 +68,7 @@ SchemaAssociations::ActiveRecord#schema_associations, such as:
         schema_associations :concise_names => false
     end
 
-See the[SchemaAssociations::Confg](http://rubydoc.info/gems/schema_associations/SchemaAssociations/Config) for the available options.
+See the [SchemaAssociations::Confg RDOC](http://rubydoc.info/gems/schema_associations/SchemaAssociations/Config) for the available options.
 
 ### This seems cool, but I'm worried about too much automagic
 
@@ -318,12 +318,11 @@ use cases that you logged).
 ## Compatibility
 
 SchemaAssociations supports all combinations of:
-*   rails 3.2
-*   MRI ruby 1.9.2 or 1.9.3
 
+*   Rails 3.2 or rails 4.0
+*   MRI ruby 1.9.3 or 2.0.0
 
-Note: As of version 1.0.0, ruby 1.8.7 and rails < 3.2 are no longer supported.
- The last version to support them is 0.1.2
+Note: As of version 1.0.0, ruby 1.8.7 and rails < 3.2 are no longer supported.  As of version 1.2.0, ruby 1.9.2 is no longer supported.
 
 ## Installation
 
@@ -350,10 +349,14 @@ specific file or example (rather than running the full suite) you can do, e.g.
 
     $ ./runspecs [other options] --rspec -- spec/association_spec.rb -e 'base'
 
-If you're running ruby 1.9, code coverage results will be in
-coverage/index.html -- it should be at 100% coverage.
+Code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
 ## Release notes:
+
+### 1.2.0
+
+* Works with Rails 4, thanks to [@tovodeverett](https://github.com/tovodeverett)
+* Test against MRI ruby 2.0.0; no longer test against 1.9.2
 
 ### 1.1.0
 
