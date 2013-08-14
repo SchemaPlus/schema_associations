@@ -329,9 +329,33 @@ describe ActiveRecord::Base do
       )
       class HappyPost < ActiveRecord::Base ; self.table_name = 'wooga_posts' ; end
       class HappyComment < ActiveRecord::Base ; self.table_name = 'wooga_comments' ; end
-      Kernel.warn HappyPost.reflect_on_all_associations.inspect
+      # Kernel.warn HappyPost.reflect_on_all_associations.inspect
       HappyComment.reflect_on_association(:post).class_name.should == "HappyPost"
       HappyPost.reflect_on_association(:comments).class_name.should == "HappyComment"
+    end
+  end
+
+  context "without position" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {} }
+      )
+      class Post < ActiveRecord::Base ; end
+      class Comment < ActiveRecord::Base ; end
+    end
+    it "should create unordered has_many association" do
+      reflection = Post.reflect_on_association(:comments)
+      reflection.should_not be_nil
+      reflection.macro.should == :has_many
+      reflection.options[:class_name].should == "Comment"
+      reflection.options[:foreign_key].should == "post_id"
+      reflection.options[:inverse_of].should == :post
+      if ::ActiveRecord::VERSION::MAJOR.to_i < 4
+        reflection.options[:order].should be_nil
+      else
+        reflection.scope.should be_nil
+      end
     end
   end
 
@@ -351,7 +375,48 @@ describe ActiveRecord::Base do
       reflection.options[:class_name].should == "Comment"
       reflection.options[:foreign_key].should == "post_id"
       reflection.options[:inverse_of].should == :post
-      reflection.options[:order].to_s.should == "position"
+      if ::ActiveRecord::VERSION::MAJOR.to_i < 4
+        reflection.options[:order].to_s.should == "position"
+      else
+        reflection.scope.should_not be_nil
+        scope_tester = Object.new
+        expect(scope_tester).to receive(:order).with(:position)
+        scope_tester.instance_exec(&reflection.scope)
+      end
+    end
+  end
+
+  context "with scope that doesn't use include" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {}, :position => {} }
+      )
+      class Post < ActiveRecord::Base ; end
+      class Comment < ActiveRecord::Base
+        scope :simple_scope, lambda { order(:id) }
+      end
+    end
+    it "should create viable scope" do
+      relation = Comment.simple_scope
+      expect { relation.to_a }.to_not raise_error
+    end
+  end
+
+  context "with scope that uses include" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {}, :position => {} }
+      )
+      class Post < ActiveRecord::Base ; end
+      class Comment < ActiveRecord::Base
+        scope :simple_scope, lambda { order(:id).includes(:post) }
+      end
+    end
+    it "should create viable scope" do
+      relation = Comment.simple_scope
+      expect { relation.to_a }.to_not raise_error
     end
   end
 
@@ -552,11 +617,8 @@ describe ActiveRecord::Base do
       end
 
       it "should define associations before needed by relation" do
-        Post.joins(:comments).all
-        expect { Post.joins(:comments).all }.to_not raise_error
-
+        expect { Post.joins(:comments).to_a }.to_not raise_error
       end
-
     end
   end
 

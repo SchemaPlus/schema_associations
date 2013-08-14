@@ -10,7 +10,7 @@ module SchemaAssociations
         end
 
         def initialize_with_schema_associations(klass, *args)
-          klass.send :_load_schema_associations_associations
+          klass.send :_load_schema_associations_associations unless klass.nil?
           initialize_without_schema_associations(klass, *args)
         end
       end
@@ -134,13 +134,21 @@ module SchemaAssociations
             macro = :has_many
             name = names[:has_many]
             if connection.columns(referencing_table_name).any?{ |col| col.name == 'position' }
-              opts[:order] = :position
+              if ::ActiveRecord::VERSION::MAJOR.to_i < 4
+                opts[:order] = :position
+              else
+                scope_block = lambda { order :position }
+              end
             end
           end
         end
         if (_filter_association(macro, name) && !_method_exists?(name))
           logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{opts.inspect[1...-1]}"
-          send macro, name, opts.dup
+          if ::ActiveRecord::VERSION::MAJOR.to_i < 4
+            send macro, name, opts.dup
+          else
+            send macro, name, scope_block, opts.dup
+          end
         end
       end
 

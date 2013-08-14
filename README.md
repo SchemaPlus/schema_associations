@@ -1,6 +1,6 @@
 # SchemaAssociations
 
-SchemaAssiciations is an ActiveRecord extension that keeps your model class
+SchemaAssociations is an ActiveRecord extension that keeps your model class
 definitions simpler and more DRY, by automatically defining associations based
 on the database schema.
 
