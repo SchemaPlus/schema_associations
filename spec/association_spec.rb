@@ -35,6 +35,12 @@ describe ActiveRecord::Base do
       reflection.options[:inverse_of].should == :comments
     end
 
+    it "should create association when accepts_nested_attributes_for is called" do
+      expect {
+        Post.class_eval { accepts_nested_attributes_for :comments }
+      }.to_not raise_error
+    end
+
     it "should create association when accessing it" do
       post = Post.create
       comment = Comment.create(:post_id => post.id)
