@@ -386,3 +386,7 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 ## License
 
 This gem is released under the MIT license.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/lomba/schema_associations/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
