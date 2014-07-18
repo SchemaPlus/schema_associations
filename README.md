@@ -353,6 +353,10 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 
 ## Release notes:
 
+### 1.2.2
+
+* Bug fix (Rails workaround) for STI: propagate associations to subclasses, since Rails might not, depending on the load order.
+
 ### 1.2.1
 
 * Works with Rails 4.1
