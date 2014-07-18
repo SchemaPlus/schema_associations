@@ -18,6 +18,7 @@ module SchemaAssociations
       def self.extended(base) #:nodoc:
         class << base
           alias_method_chain :reflect_on_association, :schema_associations
+          alias_method_chain :_reflect_on_association, :schema_associations if method_defined? :_reflect_on_association
           alias_method_chain :reflect_on_all_associations, :schema_associations
         end
         ::ActiveRecord::Relation.send :include, Relation if defined? ::ActiveRecord::Relation
@@ -26,6 +27,12 @@ module SchemaAssociations
       def reflect_on_association_with_schema_associations(*args) #:nodoc:
         _load_schema_associations_associations
         reflect_on_association_without_schema_associations(*args)
+      end
+
+      # introduced in rails 4.1
+      def _reflect_on_association_with_schema_associations(*args) #:nodoc:
+        _load_schema_associations_associations
+        _reflect_on_association_without_schema_associations(*args)
       end
 
       def reflect_on_all_associations_with_schema_associations(*args) #:nodoc:
