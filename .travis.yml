@@ -4,6 +4,7 @@ rvm:
 gemfile:
   - gemfiles/Gemfile.rails-3.2
   - gemfiles/Gemfile.rails-4.0
+  - gemfiles/Gemfile.rails-4.1
 notifications:
   recipients:
     - michal.lomnicki@gmail.com
