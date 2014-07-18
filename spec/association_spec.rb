@@ -610,6 +610,23 @@ describe ActiveRecord::Base do
     end
   end
 
+  context "regarding STI" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {},
+        "comments", {}, { :post_id => {}, :type => {coltype: :string} }
+      )
+      class Post < ActiveRecord::Base ; end
+      class Comment < ActiveRecord::Base ; end
+      class SubComment < Comment ; end
+    end
+
+    it "defines association for subclass" do
+      SubComment.reflect_on_association(:post).should_not be_nil
+    end
+  end
+
+
   if defined? ::ActiveRecord::Relation
 
     context "regarding relations" do
@@ -654,7 +671,8 @@ describe ActiveRecord::Base do
       table_defs.each_slice(3) do |table_name, opts, columns_with_options|
         ActiveRecord::Migration.create_table table_name, opts do |t|
           columns_with_options.each_pair do |column, options|
-            t.integer column, options
+            coltype = options.delete(:coltype) || :integer
+            t.send coltype, column, options
           end
         end
       end
