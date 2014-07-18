@@ -19,20 +19,20 @@ describe ActiveRecord::Base do
 
     it "should create belongs_to association when reflecting on it" do
       reflection = Comment.reflect_on_association(:post)
-      reflection.should_not be_nil
-      reflection.macro.should == :belongs_to
-      reflection.options[:class_name].should == "Post"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :comments
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Post")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:comments)
     end
 
     it "should create association when reflecting on all associations" do
       reflection = Comment.reflect_on_all_associations.first
-      reflection.should_not be_nil
-      reflection.macro.should == :belongs_to
-      reflection.options[:class_name].should == "Post"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :comments
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Post")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:comments)
     end
 
     it "should create association when accepts_nested_attributes_for is called" do
@@ -44,22 +44,22 @@ describe ActiveRecord::Base do
     it "should create association when accessing it" do
       post = Post.create
       comment = Comment.create(:post_id => post.id)
-      comment.post.id.should == post.id
+      expect(comment.post.id).to eq(post.id)
     end
 
     it "should create association when creating record" do
       post = Post.create
       comment = Comment.create(:post => post)
-      comment.reload.post.id.should == post.id
+      expect(comment.reload.post.id).to eq(post.id)
     end
 
     it "should create has_many association" do
       reflection = Post.reflect_on_association(:comments)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_many
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :post
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:post)
     end
     it "shouldn't raise an exception when model is instantiated" do
       expect { Post.new }.to_not raise_error
@@ -84,8 +84,8 @@ describe ActiveRecord::Base do
       hash.each do |key, val|
         reflection = Widget.reflect_on_association(key)
         case val
-        when true then reflection.should_not be_nil
-        else           reflection.should be_nil
+        when true then expect(reflection).not_to be_nil
+        else           expect(reflection).to be_nil
         end
       end
     end
@@ -178,8 +178,8 @@ describe ActiveRecord::Base do
           schema_associations :auto_create => false
         end
         class Comment < ActiveRecord::Base ; end
-        Post.reflect_on_association(:comments).should be_nil
-        Comment.reflect_on_association(:post).should_not be_nil
+        expect(Post.reflect_on_association(:comments)).to be_nil
+        expect(Comment.reflect_on_association(:post)).not_to be_nil
       end
     end
 
@@ -194,8 +194,8 @@ describe ActiveRecord::Base do
           schema_associations :auto_create => true
         end
         class Comment < ActiveRecord::Base ; end
-        Post.reflect_on_association(:comments).should_not be_nil
-        Comment.reflect_on_association(:post).should be_nil
+        expect(Post.reflect_on_association(:comments)).not_to be_nil
+        expect(Comment.reflect_on_association(:post)).to be_nil
       end
     end
 
@@ -209,8 +209,8 @@ describe ActiveRecord::Base do
           schema_associations
         end
         class Comment < ActiveRecord::Base ; end
-        Post.reflect_on_association(:comments).should_not be_nil
-        Comment.reflect_on_association(:post).should be_nil
+        expect(Post.reflect_on_association(:comments)).not_to be_nil
+        expect(Comment.reflect_on_association(:post)).to be_nil
       end
     end
   end
@@ -227,19 +227,19 @@ describe ActiveRecord::Base do
     end
     it "should create has_one association" do
       reflection = Post.reflect_on_association(:comment)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_one
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :post
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_one)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:post)
     end
     it "should create belongs_to association with singular inverse" do
       reflection = Comment.reflect_on_association(:post)
-      reflection.should_not be_nil
-      reflection.macro.should == :belongs_to
-      reflection.options[:class_name].should == "Post"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :comment
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Post")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:comment)
     end
   end
 
@@ -254,20 +254,20 @@ describe ActiveRecord::Base do
     end
     it "should name belongs_to according to column" do
       reflection = Comment.reflect_on_association(:subject_post)
-      reflection.should_not be_nil
-      reflection.macro.should == :belongs_to
-      reflection.options[:class_name].should == "Post"
-      reflection.options[:foreign_key].should == "subject_post_id"
-      reflection.options[:inverse_of].should == :comments_as_subject
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Post")
+      expect(reflection.options[:foreign_key]).to eq("subject_post_id")
+      expect(reflection.options[:inverse_of]).to eq(:comments_as_subject)
     end
 
     it "should name has_many using 'as column'" do
       reflection = Post.reflect_on_association(:comments_as_subject)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_many
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "subject_post_id"
-      reflection.options[:inverse_of].should == :subject_post
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("subject_post_id")
+      expect(reflection.options[:inverse_of]).to eq(:subject_post)
     end
   end
 
@@ -282,20 +282,20 @@ describe ActiveRecord::Base do
     end
     it "should name belongs_to according to column" do
       reflection = Comment.reflect_on_association(:post_cited)
-      reflection.should_not be_nil
-      reflection.macro.should == :belongs_to
-      reflection.options[:class_name].should == "Post"
-      reflection.options[:foreign_key].should == "post_cited"
-      reflection.options[:inverse_of].should == :comments_as_cited
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Post")
+      expect(reflection.options[:foreign_key]).to eq("post_cited")
+      expect(reflection.options[:inverse_of]).to eq(:comments_as_cited)
     end
 
     it "should name has_many using 'as column'" do
       reflection = Post.reflect_on_association(:comments_as_cited)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_many
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "post_cited"
-      reflection.options[:inverse_of].should == :post_cited
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("post_cited")
+      expect(reflection.options[:inverse_of]).to eq(:post_cited)
     end
   end
 
@@ -310,20 +310,20 @@ describe ActiveRecord::Base do
     end
     it "should name belongs_to according to column" do
       reflection = Comment.reflect_on_association(:subject)
-      reflection.should_not be_nil
-      reflection.macro.should == :belongs_to
-      reflection.options[:class_name].should == "Post"
-      reflection.options[:foreign_key].should == "subject"
-      reflection.options[:inverse_of].should == :comments_as_subject
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:belongs_to)
+      expect(reflection.options[:class_name]).to eq("Post")
+      expect(reflection.options[:foreign_key]).to eq("subject")
+      expect(reflection.options[:inverse_of]).to eq(:comments_as_subject)
     end
 
     it "should name has_many using 'as column'" do
       reflection = Post.reflect_on_association(:comments_as_subject)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_many
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "subject"
-      reflection.options[:inverse_of].should == :subject
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("subject")
+      expect(reflection.options[:inverse_of]).to eq(:subject)
     end
   end
 
@@ -336,8 +336,8 @@ describe ActiveRecord::Base do
       class HappyPost < ActiveRecord::Base ; self.table_name = 'wooga_posts' ; end
       class HappyComment < ActiveRecord::Base ; self.table_name = 'wooga_comments' ; end
       # Kernel.warn HappyPost.reflect_on_all_associations.inspect
-      HappyComment.reflect_on_association(:post).class_name.should == "HappyPost"
-      HappyPost.reflect_on_association(:comments).class_name.should == "HappyComment"
+      expect(HappyComment.reflect_on_association(:post).class_name).to eq("HappyPost")
+      expect(HappyPost.reflect_on_association(:comments).class_name).to eq("HappyComment")
     end
   end
 
@@ -352,15 +352,15 @@ describe ActiveRecord::Base do
     end
     it "should create unordered has_many association" do
       reflection = Post.reflect_on_association(:comments)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_many
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :post
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:post)
       if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-        reflection.options[:order].should be_nil
+        expect(reflection.options[:order]).to be_nil
       else
-        reflection.scope.should be_nil
+        expect(reflection.scope).to be_nil
       end
     end
   end
@@ -376,15 +376,15 @@ describe ActiveRecord::Base do
     end
     it "should create ordered has_many association" do
       reflection = Post.reflect_on_association(:comments)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_many
-      reflection.options[:class_name].should == "Comment"
-      reflection.options[:foreign_key].should == "post_id"
-      reflection.options[:inverse_of].should == :post
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:class_name]).to eq("Comment")
+      expect(reflection.options[:foreign_key]).to eq("post_id")
+      expect(reflection.options[:inverse_of]).to eq(:post)
       if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-        reflection.options[:order].to_s.should == "position"
+        expect(reflection.options[:order].to_s).to eq("position")
       else
-        reflection.scope.should_not be_nil
+        expect(reflection.scope).not_to be_nil
         scope_tester = Object.new
         expect(scope_tester).to receive(:order).with(:position)
         scope_tester.instance_exec(&reflection.scope)
@@ -439,7 +439,7 @@ describe ActiveRecord::Base do
     it "should use children as the inverse of parent" do
       class Node < ActiveRecord::Base ; end
       reflection = Node.reflect_on_association(:children)
-      reflection.should_not be_nil
+      expect(reflection).not_to be_nil
     end
 
     it "should use child as the singular inverse of parent" do
@@ -448,7 +448,7 @@ describe ActiveRecord::Base do
       end
       class Node < ActiveRecord::Base ; end
       reflection = Node.reflect_on_association(:child)
-      reflection.should_not be_nil
+      expect(reflection).not_to be_nil
     end
   end
 
@@ -486,11 +486,11 @@ describe ActiveRecord::Base do
       with_associations_config(:auto_create => true, :concise_names => true) do
         prefix_one
         reflection = Post.reflect_on_association(:comments)
-        reflection.should_not be_nil
-        reflection.macro.should == :has_many
-        reflection.options[:class_name].should == "PostComment"
-        reflection.options[:foreign_key].should == "post_id"
-        reflection.options[:inverse_of].should == :post
+        expect(reflection).not_to be_nil
+        expect(reflection.macro).to eq(:has_many)
+        expect(reflection.options[:class_name]).to eq("PostComment")
+        expect(reflection.options[:foreign_key]).to eq("post_id")
+        expect(reflection.options[:inverse_of]).to eq(:post)
       end
     end
 
@@ -498,11 +498,11 @@ describe ActiveRecord::Base do
       with_associations_config(:auto_create => true, :concise_names => true) do
         suffix_one
         reflection = Post.reflect_on_association(:comments)
-        reflection.should_not be_nil
-        reflection.macro.should == :has_many
-        reflection.options[:class_name].should == "CommentPost"
-        reflection.options[:foreign_key].should == "post_id"
-        reflection.options[:inverse_of].should == :post
+        expect(reflection).not_to be_nil
+        expect(reflection.macro).to eq(:has_many)
+        expect(reflection.options[:class_name]).to eq("CommentPost")
+        expect(reflection.options[:foreign_key]).to eq("post_id")
+        expect(reflection.options[:inverse_of]).to eq(:post)
       end
     end
 
@@ -510,11 +510,11 @@ describe ActiveRecord::Base do
       with_associations_config(:auto_create => true, :concise_names => true) do
         prefix_both
         reflection = BlogPagePost.reflect_on_association(:comments)
-        reflection.should_not be_nil
-        reflection.macro.should == :has_many
-        reflection.options[:class_name].should == "BlogPageComment"
-        reflection.options[:foreign_key].should == "blog_page_post_id"
-        reflection.options[:inverse_of].should == :post
+        expect(reflection).not_to be_nil
+        expect(reflection.macro).to eq(:has_many)
+        expect(reflection.options[:class_name]).to eq("BlogPageComment")
+        expect(reflection.options[:foreign_key]).to eq("blog_page_post_id")
+        expect(reflection.options[:inverse_of]).to eq(:post)
       end
     end
 
@@ -522,13 +522,13 @@ describe ActiveRecord::Base do
       with_associations_config(:auto_create => true, :concise_names => false) do
         prefix_one
         reflection = Post.reflect_on_association(:post_comments)
-        reflection.should_not be_nil
-        reflection.macro.should == :has_many
-        reflection.options[:class_name].should == "PostComment"
-        reflection.options[:foreign_key].should == "post_id"
-        reflection.options[:inverse_of].should == :post
+        expect(reflection).not_to be_nil
+        expect(reflection.macro).to eq(:has_many)
+        expect(reflection.options[:class_name]).to eq("PostComment")
+        expect(reflection.options[:foreign_key]).to eq("post_id")
+        expect(reflection.options[:inverse_of]).to eq(:post)
         reflection = Post.reflect_on_association(:comments)
-        reflection.should be_nil
+        expect(reflection).to be_nil
       end
     end
 
@@ -536,13 +536,13 @@ describe ActiveRecord::Base do
       with_associations_config(:auto_create => true, :concise_names => true) do
         prefix_one
         reflection = Post.reflect_on_association(:comments)
-        reflection.should_not be_nil
-        reflection.macro.should == :has_many
-        reflection.options[:class_name].should == "PostComment"
-        reflection.options[:foreign_key].should == "post_id"
-        reflection.options[:inverse_of].should == :post
+        expect(reflection).not_to be_nil
+        expect(reflection.macro).to eq(:has_many)
+        expect(reflection.options[:class_name]).to eq("PostComment")
+        expect(reflection.options[:foreign_key]).to eq("post_id")
+        expect(reflection.options[:inverse_of]).to eq(:post)
         reflection = Post.reflect_on_association(:post_comments)
-        reflection.should be_nil
+        expect(reflection).to be_nil
       end
     end
 
@@ -561,10 +561,10 @@ describe ActiveRecord::Base do
     end
     it "should create has_and_belongs_to_many association" do
       reflection = Post.reflect_on_association(:tags)
-      reflection.should_not be_nil
-      reflection.macro.should == :has_and_belongs_to_many
-      reflection.options[:class_name].should == "Tag"
-      reflection.options[:join_table].should == "posts_tags"
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_and_belongs_to_many)
+      expect(reflection.options[:class_name]).to eq("Tag")
+      expect(reflection.options[:join_table]).to eq("posts_tags")
     end
   end
 
@@ -577,7 +577,7 @@ describe ActiveRecord::Base do
     end
     it "should define association normally if no existing method is defined" do
       class Type < ActiveRecord::Base ; end
-      Type.reflect_on_association(:posts).should_not be_nil # sanity check for this context
+      expect(Type.reflect_on_association(:posts)).not_to be_nil # sanity check for this context
     end
     it "should not define association over existing public method" do
       class Type < ActiveRecord::Base
@@ -585,7 +585,7 @@ describe ActiveRecord::Base do
           :existing
         end
       end
-      Type.reflect_on_association(:posts).should be_nil
+      expect(Type.reflect_on_association(:posts)).to be_nil
     end
     it "should not define association over existing private method" do
       class Type < ActiveRecord::Base
@@ -594,11 +594,11 @@ describe ActiveRecord::Base do
           :existing
         end
       end
-      Type.reflect_on_association(:posts).should be_nil
+      expect(Type.reflect_on_association(:posts)).to be_nil
     end
     it "should define association :type over (deprecated) kernel method" do
       class Post < ActiveRecord::Base ; end
-      Post.reflect_on_association(:type).should_not be_nil
+      expect(Post.reflect_on_association(:type)).not_to be_nil
     end
     it "should not define association :type over model method" do
       class Post < ActiveRecord::Base
@@ -606,7 +606,7 @@ describe ActiveRecord::Base do
           :existing
         end
       end
-      Post.reflect_on_association(:type).should be_nil
+      expect(Post.reflect_on_association(:type)).to be_nil
     end
   end
 
@@ -622,7 +622,7 @@ describe ActiveRecord::Base do
     end
 
     it "defines association for subclass" do
-      SubComment.reflect_on_association(:post).should_not be_nil
+      expect(SubComment.reflect_on_association(:post)).not_to be_nil
     end
   end
 
