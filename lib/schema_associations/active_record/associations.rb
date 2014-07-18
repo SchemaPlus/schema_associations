@@ -114,6 +114,9 @@ module SchemaAssociations
 
         names = _determine_association_names(column_name.sub(/_id$/, ''), referencing_name, references_name)
 
+        argstr = ""
+
+
         case macro
         when :has_and_belongs_to_many
           name = names[:has_many]
@@ -145,19 +148,32 @@ module SchemaAssociations
                 opts[:order] = :position
               else
                 scope_block = lambda { order :position }
+                argstr += "-> { order :position }, "
               end
             end
           end
         end
+        argstr += opts.inspect[1...-1]
         if (_filter_association(macro, name) && !_method_exists?(name))
-          logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{opts.inspect[1...-1]}"
           if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-            send macro, name, opts.dup
+            _create_association(macro, name, argstr, opts.dup)
           else
-            send macro, name, scope_block, opts.dup
+            _create_association(macro, name, argstr, scope_block, opts.dup)
           end
         end
       end
+
+      def _create_association(macro, name, argstr, *args)
+        logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{argstr}"
+        send macro, name, *args
+        case 
+        when respond_to?(:subclasses) then subclasses
+        when respond_to?(:descendants) then descendants
+        end.each do |subclass|
+          subclass.send :_create_association, macro, name, argstr, *args
+        end
+      end
+
 
       def _determine_association_names(reference_name, referencing_name, references_name)
 

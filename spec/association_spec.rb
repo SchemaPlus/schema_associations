@@ -614,15 +614,25 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {}, :type => {coltype: :string} }
+        "comments", {}, { :post_id => {}, :type => {coltype: :string} },
+        "citers", {}, {},
+        "citations", {}, { :comment_id => {}, :citer_id => {}}
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
+      class Citation < ActiveRecord::Base ; end
       class SubComment < Comment ; end
+      class OwnComment < Comment
+        has_one :citer, :through => :citations
+      end
     end
 
     it "defines association for subclass" do
       expect(SubComment.reflect_on_association(:post)).not_to be_nil
+    end
+
+    it "defines association for subclass that has its own associations" do
+      expect(OwnComment.reflect_on_association(:post)).not_to be_nil
     end
   end
 
