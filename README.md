@@ -353,6 +353,11 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 
 ## Release notes:
 
+### 1.2.1
+
+* Works with Rails 4.1
+* Test against MRI ruby 2.1.2
+
 ### 1.2.0
 
 * Works with Rails 4, thanks to [@tovodeverett](https://github.com/tovodeverett)
