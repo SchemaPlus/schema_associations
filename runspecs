@@ -5,7 +5,7 @@ require 'ostruct'
 require 'shellwords'
 require 'tempfile'
 
-RUBY_VERSIONS = %W[1.9.3 2.0.0]
+RUBY_VERSIONS = %W[1.9.3 2.1.2]
 RAILS_VERSIONS = %W[3.2 4.0 4.1]
 
 o = OpenStruct.new

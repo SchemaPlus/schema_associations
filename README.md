@@ -317,10 +317,10 @@ use cases that you logged).
 
 ## Compatibility
 
-SchemaAssociations supports all combinations of:
+SchemaAssociations is tested on all combinations of:
 
 *   Rails 3.2 or rails 4.0
-*   MRI ruby 1.9.3 or 2.0.0
+*   MRI ruby 1.9.3 or 2.1.2
 
 Note: As of version 1.0.0, ruby 1.8.7 and rails < 3.2 are no longer supported.  As of version 1.2.0, ruby 1.9.2 is no longer supported.
 
