@@ -7,5 +7,5 @@ ActiveRecord::Base.configurations = {
 
 }
 
-ActiveRecord::Base.establish_connection 'schema_associations'
+ActiveRecord::Base.establish_connection :schema_associations
 ActiveRecord::Base.connection.execute "PRAGMA synchronous = OFF"
