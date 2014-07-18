@@ -62,10 +62,16 @@ if system("which -s rvm")
         "rvm #{ruby} do"
     end
 else
-    # using rbenv.  remove current version from path and current gem path
-    # so that forked shell will respect RBENV_VERSION variable
-    ENV['PATH'] = ENV['PATH'].split(':').reject{|dir| dir =~ %r{/rbenv/versions/}}.join(':')
-    ENV['GEM_PATH'] = nil
+    # using rbenv.
+    #
+    # because we're running within a ruby program that was launched by
+    # rbenv, we already have various environment variables set up.  need
+    # strip those out so that the forked shell can run a diifferent ruby
+    # version than the one we're in now.
+    ENV['PATH'] = ENV['PATH'].split(':').reject{|dir| dir =~ %r{/\.?rbenv/(?!shims)}}.join(':')
+    ENV['GEM_PATH'] = ENV['GEM_PATH'].split(':').reject{|dir| dir =~ %r{/\.?rbenv}}.join(':') unless ENV['GEM_PATH'].nil?
+    ENV['RBENV_DIR'] = nil
+    ENV['RBENV_HOOK_PATH'] = nil
 
     def ruby_version_selector(ruby)
         @versions ||= `rbenv versions --bare`.split
@@ -100,7 +106,7 @@ combos.each_with_index do |combo, n|
     Tempfile.open('runspecs') do |file|
         system("(#{command}) 2>&1 | tee #{file.path}")
         file.rewind
-        errs << "ruby #{ruby}, rails #{rails}" if file.readlines.grep(/^Failed examples/).any?
+        errs << "ruby #{ruby}, rails #{rails}" if file.readlines.grep(/(^Failed examples)|(rake aborted)/).any?
     end
 end
 puts errs.any? ?  "\n*** #{errs.size} failures:\n\t#{errs.join("\n\t")}" : "\n*** #{combos.size > 1 ? 'all versions' : 'spec'} succeeded ***" unless o.dry_run
