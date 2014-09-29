@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Ronen Barzel", "Michał Łomnicki"]
   s.email       = ["ronen@barzel.org", "michal.lomnicki@gmail.com"]
-  s.homepage    = "https://github.com/lomba/schema_associations"
+  s.homepage    = "https://github.com/SchemaPlus/schema_associations"
   s.summary     = "ActiveRecord extension that automatically (DRY) creates associations based on the schema"
   s.description = "SchemaAssociations extends ActiveRecord to automatically create associations by inspecting the database schema.  This is more more DRY than the standard behavior, for which in addition to specifying the foreign key in the migration, you must also specify complementary associations in two model files (e.g. a :belongs_to and a :has_many)."
 
