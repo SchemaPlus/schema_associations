@@ -5,8 +5,8 @@ definitions simpler and more DRY, by automatically defining associations based
 on the database schema.
 
 [![Gem Version](https://badge.fury.io/rb/schema_associations.png)](http://badge.fury.io/rb/schema_associations)
-[![Build Status](https://secure.travis-ci.org/lomba/schema_associations.png)](http://travis-ci.org/lomba/schema_associations)
-[![Dependency Status](https://gemnasium.com/lomba/schema_associations.png)](https://gemnasium.com/lomba/schema_associations)
+[![Build Status](https://secure.travis-ci.org/SchemaPlus/schema_associations.png)](http://travis-ci.org/SchemaPlus/schema_associations)
+[![Dependency Status](https://gemnasium.com/SchemaPlus/schema_associations.png)](https://gemnasium.com/SchemaPlus/schema_associations)
 
 ## Overview
 
@@ -395,7 +395,3 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 ## License
 
 This gem is released under the MIT license.
-
-
-[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/lomba/schema_associations/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
-
