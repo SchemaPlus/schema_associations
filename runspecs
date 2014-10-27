@@ -56,7 +56,13 @@ combos = o.ruby_versions.product(o.rails_versions).map{|product| Combo.new(*prod
     end
 }
 
-if system("which -s rvm")
+case
+when system("which -s chruby-exec")
+    def ruby_version_selector(ruby)
+        "SHELL=`which bash` chruby-exec #{ruby} --"
+    end
+
+when system("which -s rvm")
     # using rvm
     def ruby_version_selector(ruby)
         "rvm #{ruby} do"
