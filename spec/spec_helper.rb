@@ -9,9 +9,9 @@ require 'rspec'
 require 'active_record'
 require 'schema_associations'
 require 'logger'
-require 'connection'
+require 'schema_dev/rspec'
 
-ActiveRecord::Base.logger = Logger.new(File.open("spec.log", "w"))
+SchemaDev::Rspec::setup_db('sqlite3')
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
