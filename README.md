@@ -336,18 +336,14 @@ or in a Gemfile
 
 ## Testing
 
-SchemaAssociations is tested using rspec, sqlite3, and rvm, with some hackery
-to test against multiple versions of rails and ruby.  To run the full combo of
+SchemaAssociations is tested against the matrix of combinations.  To run the full combo of
 tests, after you've forked & cloned: 
 
     $ cd schema_associations
-    $ ./runspecs --install  # do this once to install gem dependencies for all versions (slow)
-    $ ./runspecs # as many times as you like
+    $ schema_dev bundle install
+    $ schema_dev rspec
 
-See `./runspecs --help` for more options.  In particular, to run rspec on a
-specific file or example (rather than running the full suite) you can do, e.g.
-
-    $ ./runspecs [other options] --rspec -- spec/association_spec.rb -e 'base'
+For more info, see [schema_dev](https://github.com/SchemaPlus/schema_dev)
 
 Code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
