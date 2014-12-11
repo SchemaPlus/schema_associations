@@ -5,6 +5,7 @@ rails:
   - 3.2
   - 4.0
   - 4.1
+db: sqlite3
 notify:
  - toby@ovod-everett.org
  - ronen@barzel.org

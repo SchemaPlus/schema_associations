@@ -11,7 +11,7 @@ require 'schema_associations'
 require 'logger'
 require 'schema_dev/rspec'
 
-SchemaDev::Rspec::setup_db('sqlite3')
+SchemaDev::Rspec::setup_db
 
 Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each {|f| require f}
 
