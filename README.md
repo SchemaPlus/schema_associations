@@ -4,9 +4,11 @@ SchemaAssociations is an ActiveRecord extension that keeps your model class
 definitions simpler and more DRY, by automatically defining associations based
 on the database schema.
 
-[![Gem Version](https://badge.fury.io/rb/schema_associations.png)](http://badge.fury.io/rb/schema_associations)
-[![Build Status](https://secure.travis-ci.org/SchemaPlus/schema_associations.png)](http://travis-ci.org/SchemaPlus/schema_associations)
-[![Dependency Status](https://gemnasium.com/SchemaPlus/schema_associations.png)](https://gemnasium.com/SchemaPlus/schema_associations)
+[![Gem Version](https://badge.fury.io/rb/schema_associations.svg)](http://badge.fury.io/rb/schema_associations)
+[![Build Status](https://secure.travis-ci.org/SchemaPlus/schema_associations.svg)](http://travis-ci.org/SchemaPlus/schema_associations)
+[![Coverage Status](https://img.shields.io/coveralls/SchemaPlus/schema_associations.svg)](https://coveralls.io/r/SchemaPlus/schema_associations?branch=master)
+[![Dependency Status](https://gemnasium.com/lomba/schema_associations.svg)](https://gemnasium.com/lomba/schema_associations)
+
 
 ## Overview
 
