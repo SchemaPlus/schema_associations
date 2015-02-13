@@ -158,7 +158,7 @@ referencing table, suffixed with "as" the relationship name.  An example
 should make this clear...
 
 Suppose your company hires interns, and each intern is assigned a manager and
-a mentor, who are regular employees. 
+a mentor, who are regular employees.
 
     create_table :interns do |t|
         t.integer :manager_id,      :references => :employees
@@ -255,7 +255,7 @@ turn off concise names globally or per-model, see [SchemaAssociations::Config](h
 ### Ordering `has_many` using `position`
 
 If the target of a `has_many` association has a column named `position`,
-SchemaAssociations will specify `:order => :position` for the association. 
+SchemaAssociations will specify `:order => :position` for the association.
 That is,
 
     create_table :comments do |t|
@@ -268,13 +268,13 @@ leads to
     class Post < ActiveRecord::Base
       has_many :comments, :order => :position
     end
-    
+
 ## Table names and model class names
 
-SchemaAssociations determins the mode class name from the table name using the same convention (and helpers) that ActiveRecord uses.  But sometimes you might be doing things differently.  For example, in an engine you might have a prefix that goes in front of all table names, and the models might all be in a namespace.  
+SchemaAssociations determins the mode class name from the table name using the same convention (and helpers) that ActiveRecord uses.  But sometimes you might be doing things differently.  For example, in an engine you might have a prefix that goes in front of all table names, and the models might all be in a namespace.
 
 To that end, SchemaAssociations lets you configure mappings from a table name prefix to a model class name prefix to use instead.  For example, suppose your database had tables:
-      
+
       hpy_campers
       hpy_go_lucky
 
@@ -282,12 +282,12 @@ The default model class names would be
 
 	  HpyCampers
 	  HpyGoLucky
-	 
+	
 But if instead you wanted
 
 	  Happy::Campers
 	  Happy::GoLucky
-	  
+	
 You could set up this mapping in `config/initializers/schema_associations.rb`:
 
       SchemaPlus.setup do |config|
@@ -296,7 +296,7 @@ You could set up this mapping in `config/initializers/schema_associations.rb`:
 
 Tables names that don't start with `hpy_` will continue to use the default determination.
 
-You can set up multiple mappings.  E.g. if you're using several engines they can each set up the mapping for their own moduels.  
+You can set up multiple mappings.  E.g. if you're using several engines they can each set up the mapping for their own moduels.
 
 You can set up a mapping from or to the empty string, in order to unconditionally add or remove prefixes from all model class names.
 
@@ -339,7 +339,7 @@ or in a Gemfile
 ## Testing
 
 SchemaAssociations is tested against the matrix of combinations.  To run the full combo of
-tests, after you've forked & cloned: 
+tests, after you've forked & cloned:
 
     $ cd schema_associations
     $ schema_dev bundle install
@@ -371,7 +371,7 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 
 ### 1.0.1
 
-*   Bug fix: use singular :inverse_of for :belongs_to of a :has_one 
+*   Bug fix: use singular :inverse_of for :belongs_to of a :has_one
 
 
 ### 1.0.0

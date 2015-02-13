@@ -166,7 +166,7 @@ module SchemaAssociations
       def _create_association(macro, name, argstr, *args)
         logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{argstr}"
         send macro, name, *args
-        case 
+        case
         when respond_to?(:subclasses) then subclasses
         when respond_to?(:descendants) then descendants
         end.each do |subclass|

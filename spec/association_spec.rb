@@ -95,70 +95,70 @@ describe ActiveRecord::Base do
       check_reflections(:owner => true, :colors => true, :parts => true, :manifest => true)
     end
 
-    it "should respect :only" do 
+    it "should respect :only" do
       class Widget < ActiveRecord::Base
         schema_associations :only => :owner
       end
       check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
     end
 
-    it "should respect :except" do 
+    it "should respect :except" do
       class Widget < ActiveRecord::Base
         schema_associations :except => :owner
       end
       check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
     end
 
-    it "should respect :only_type :belongs_to" do 
+    it "should respect :only_type :belongs_to" do
       class Widget < ActiveRecord::Base
         schema_associations :only_type => :belongs_to
       end
       check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
     end
 
-    it "should respect :except_type :belongs_to" do 
+    it "should respect :except_type :belongs_to" do
       class Widget < ActiveRecord::Base
         schema_associations :except_type => :belongs_to
       end
       check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
     end
 
-    it "should respect :only_type :has_many" do 
+    it "should respect :only_type :has_many" do
       class Widget < ActiveRecord::Base
         schema_associations :only_type => :has_many
       end
       check_reflections(:owner => false, :colors => false, :parts => true, :manifest => false)
     end
 
-    it "should respect :except_type :has_many" do 
+    it "should respect :except_type :has_many" do
       class Widget < ActiveRecord::Base
         schema_associations :except_type => :has_many
       end
       check_reflections(:owner => true, :colors => true, :parts => false, :manifest => true)
     end
 
-    it "should respect :only_type :has_one" do 
+    it "should respect :only_type :has_one" do
       class Widget < ActiveRecord::Base
         schema_associations :only_type => :has_one
       end
       check_reflections(:owner => false, :colors => false, :parts => false, :manifest => true)
     end
 
-    it "should respect :except_type :has_one" do 
+    it "should respect :except_type :has_one" do
       class Widget < ActiveRecord::Base
         schema_associations :except_type => :has_one
       end
       check_reflections(:owner => true, :colors => true, :parts => true, :manifest => false)
     end
 
-    it "should respect :only_type :has_and_belongs_to_many" do 
+    it "should respect :only_type :has_and_belongs_to_many" do
       class Widget < ActiveRecord::Base
         schema_associations :only_type => :has_and_belongs_to_many
       end
       check_reflections(:owner => false, :colors => true, :parts => false, :manifest => false)
     end
 
-    it "should respect :except_type :has_and_belongs_to_many" do 
+    it "should respect :except_type :has_and_belongs_to_many" do
       class Widget < ActiveRecord::Base
         schema_associations :except_type => :has_and_belongs_to_many
       end
