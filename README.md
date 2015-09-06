@@ -305,7 +305,7 @@ You can set up a mapping from or to the empty string, in order to unconditionall
 
 If you're curious (or dubious) about what associations SchemaAssociations
 defines, you can check the log file.  For every assocation that
-SchemaAssociations defines, it generates an info entry such as
+SchemaAssociations defines, it generates a debug entry such as
 
     [schema_associations] Post.has_many :comments, :class_name "Comment", :foreign_key "comment_id"
 
