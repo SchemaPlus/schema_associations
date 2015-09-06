@@ -145,22 +145,14 @@ module SchemaAssociations
             macro = :has_many
             name = names[:has_many]
             if connection.columns(referencing_table_name).any?{ |col| col.name == 'position' }
-              if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-                opts[:order] = :position
-              else
-                scope_block = lambda { order :position }
-                argstr += "-> { order :position }, "
-              end
+              scope_block = lambda { order :position }
+              argstr += "-> { order :position }, "
             end
           end
         end
         argstr += opts.inspect[1...-1]
         if (_filter_association(macro, name) && !_method_exists?(name))
-          if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-            _create_association(macro, name, argstr, opts.dup)
-          else
-            _create_association(macro, name, argstr, scope_block, opts.dup)
-          end
+          _create_association(macro, name, argstr, scope_block, opts.dup)
         end
       end
 
