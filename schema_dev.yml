@@ -1,8 +1,11 @@
 ruby:
   - 2.1.5
-rails:
+activerecord:
   - 4.2
-db: sqlite3
+db:
+  - mysql2
+  - postgresql
+  - sqlite3
 notify:
  - toby@ovod-everett.org
  - ronen@barzel.org
