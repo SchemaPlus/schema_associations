@@ -83,9 +83,9 @@ module SchemaAssociations
         return unless schema_associations_config.auto_create?
 
         reverse_foreign_keys.each do | foreign_key |
-          if foreign_key.table_name =~ /^#{table_name}_(.*)$/ || foreign_key.table_name =~ /^(.*)_#{table_name}$/
+          if foreign_key.from_table =~ /^#{table_name}_(.*)$/ || foreign_key.from_table =~ /^(.*)_#{table_name}$/
             other_table = $1
-            if other_table == other_table.pluralize and connection.columns(foreign_key.table_name).any?{|col| col.name == "#{other_table.singularize}_id"}
+            if other_table == other_table.pluralize and connection.columns(foreign_key.from_table).any?{|col| col.name == "#{other_table.singularize}_id"}
               _define_association(:has_and_belongs_to_many, foreign_key, other_table)
             else
               _define_association(:has_one_or_many, foreign_key)
@@ -101,12 +101,13 @@ module SchemaAssociations
       end
 
       def _define_association(macro, fk, referencing_table_name = nil) #:nodoc:
-        return unless fk.column_names.size == 1
+        column_names = Array.wrap(fk.column)
+        return unless column_names.size == 1
 
-        referencing_table_name ||= fk.table_name
-        column_name = fk.column_names.first
+        referencing_table_name ||= fk.from_table
+        column_name = column_names.first
 
-        references_name = fk.references_table_name.singularize
+        references_name = fk.to_table.singularize
         referencing_name = referencing_table_name.singularize
 
         referencing_class_name = _get_class_name(referencing_name)
@@ -120,7 +121,7 @@ module SchemaAssociations
         case macro
         when :has_and_belongs_to_many
           name = names[:has_many]
-          opts = {:class_name => referencing_class_name, :join_table => fk.table_name, :foreign_key => column_name}
+          opts = {:class_name => referencing_class_name, :join_table => fk.from_table, :foreign_key => column_name}
         when :belongs_to
           name = names[:belongs_to]
           opts = {:class_name => references_class_name, :foreign_key => column_name}
@@ -164,7 +165,7 @@ module SchemaAssociations
       end
 
       def _create_association(macro, name, argstr, *args)
-        logger.info "[schema_associations] #{self.name || self.table_name.classify}.#{macro} #{name.inspect}, #{argstr}"
+        logger.info "[schema_associations] #{self.name || self.from_table.classify}.#{macro} #{name.inspect}, #{argstr}"
         send macro, name, *args
         case
         when respond_to?(:subclasses) then subclasses
