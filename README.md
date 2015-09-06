@@ -329,6 +329,7 @@ SchemaAssociations is tested on all combinations of:
     
 Notes:
 
+* As of version 1.2.3, rails < 4.1 and ruby < 2.1 are no longer supported
 * As of version 1.2.0, ruby 1.9.2 is no longer supported.
 * As of version 1.0.0, ruby 1.8.7 and rails < 3.2 are no longer supported.
 
@@ -356,6 +357,12 @@ For more info, see [schema_dev](https://github.com/SchemaPlus/schema_dev)
 Code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
 ## Release notes:
+
+### 1.2.3
+
+* Use schema_plus_foreign_keys rather than all of schema_plus, to eliminate unneeded dependancies.  That limits us to AR >= 4.1 and ruby >= 2.1
+* Fix deprecations
+* Logging is now at `debug` level rather than `info` level
 
 ### 1.2.2
 
