@@ -676,7 +676,7 @@ describe ActiveRecord::Base do
   def create_tables(*table_defs)
     ActiveRecord::Migration.suppress_messages do
       ActiveRecord::Base.connection.tables.each do |table|
-        ActiveRecord::Migration.drop_table table
+        ActiveRecord::Migration.drop_table table, force: :cascade
       end
       table_defs.each_slice(3) do |table_name, opts, columns_with_options|
         ActiveRecord::Migration.create_table table_name, opts do |t|
