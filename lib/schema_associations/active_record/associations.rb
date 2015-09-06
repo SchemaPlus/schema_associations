@@ -161,7 +161,6 @@ module SchemaAssociations
         send macro, name, *args
         case
         when respond_to?(:subclasses) then subclasses
-        when respond_to?(:descendants) then descendants
         end.each do |subclass|
           subclass.send :_create_association, macro, name, argstr, *args
         end
