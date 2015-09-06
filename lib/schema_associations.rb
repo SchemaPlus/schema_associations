@@ -1,4 +1,4 @@
-require 'schema_plus'
+require 'schema_plus_foreign_keys'
 require 'valuable'
 
 require 'schema_associations/version'

@@ -11,7 +11,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {} }
+        "comments", {}, { :post_id => {foreign_key: true} }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -72,11 +72,11 @@ describe ActiveRecord::Base do
         "owners", {}, {},
         "colors", {}, {},
         "widgets", {}, {
-          :owner_id => {},
+          :owner_id => { foreign_key: true },
         },
-        "parts", {}, { :widget_id => {} },
-        "manifests", {}, { :widget_id => { :index => {:unique => true}} },
-        "colors_widgets", {:id => false}, { :widget_id => {}, :color_id => {} }
+        "parts", {}, { :widget_id => { foreign_key: true } },
+        "manifests", {}, { :widget_id => { foreign_key: true, :index => {:unique => true}} },
+        "colors_widgets", {:id => false}, { :widget_id => { foreign_key: true}, :color_id => { foreign_key: true} }
       )
     end
 
@@ -172,7 +172,7 @@ describe ActiveRecord::Base do
       with_associations_auto_create(true) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {} }
+          "comments", {}, { :post_id => {foreign_key: true} }
         )
         class Post < ActiveRecord::Base
           schema_associations :auto_create => false
@@ -188,7 +188,7 @@ describe ActiveRecord::Base do
       with_associations_auto_create(false) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {} }
+          "comments", {}, { :post_id => {foreign_key: true} }
         )
         class Post < ActiveRecord::Base
           schema_associations :auto_create => true
@@ -203,7 +203,7 @@ describe ActiveRecord::Base do
       with_associations_auto_create(false) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {} }
+          "comments", {}, { :post_id => {foreign_key: true} }
         )
         class Post < ActiveRecord::Base
           schema_associations
@@ -220,7 +220,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {:index => { :unique => true} } }
+        "comments", {}, { :post_id => {foreign_key: true, :index => { :unique => true} } }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -247,7 +247,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :subject_post_id => { :references => :posts} }
+        "comments", {}, { :subject_post_id => { foreign_key: { references: "posts" }} }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -275,7 +275,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_cited => { :references => :posts} }
+        "comments", {}, { :post_cited => { foreign_key: {references: "posts" }} }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -303,7 +303,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :subject => {:references => :posts} }
+        "comments", {}, { :subject => {foreign_key: { references: "posts" }} }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -331,7 +331,7 @@ describe ActiveRecord::Base do
     with_associations_config(:table_prefix_map => { "wooga_" => "Happy"} ) do
       create_tables(
         "wooga_posts", {}, {},
-        "wooga_comments", {}, { :wooga_post_id => { :references => :wooga_posts} }
+        "wooga_comments", {}, { :wooga_post_id => { foreign_key: true} }
       )
       class HappyPost < ActiveRecord::Base ; self.table_name = 'wooga_posts' ; end
       class HappyComment < ActiveRecord::Base ; self.table_name = 'wooga_comments' ; end
@@ -345,7 +345,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {} }
+        "comments", {}, { :post_id => { foreign_key: true} }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -369,7 +369,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {}, :position => {} }
+        "comments", {}, { :post_id => {foreign_key: true}, :position => {} }
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -432,7 +432,7 @@ describe ActiveRecord::Base do
 
     before(:each) do
       create_tables(
-        "nodes", {:foreign_keys => {:auto_index => false}}, { :parent_id => {} }
+        "nodes", {}, { :parent_id => { foreign_key: true} }
       )
     end
 
@@ -458,7 +458,7 @@ describe ActiveRecord::Base do
     def prefix_one
       create_tables(
         "posts", {}, {},
-        "post_comments", {}, { :post_id => {} }
+        "post_comments", {}, { :post_id => { foreign_key: true} }
       )
       Object.const_set(:Post, Class.new(ActiveRecord::Base))
       Object.const_set(:PostComment, Class.new(ActiveRecord::Base))
@@ -467,7 +467,7 @@ describe ActiveRecord::Base do
     def suffix_one
       create_tables(
         "posts", {}, {},
-        "comment_posts", {}, { :post_id => {} }
+        "comment_posts", {}, { :post_id => { foreign_key: true} }
       )
       Object.const_set(:Post, Class.new(ActiveRecord::Base))
       Object.const_set(:CommentPost, Class.new(ActiveRecord::Base))
@@ -476,7 +476,7 @@ describe ActiveRecord::Base do
     def prefix_both
       create_tables(
         "blog_page_posts", {}, {},
-        "blog_page_comments", {}, { :blog_page_post_id => {} }
+        "blog_page_comments", {}, { :blog_page_post_id => { foreign_key: true} }
       )
       Object.const_set(:BlogPagePost, Class.new(ActiveRecord::Base))
       Object.const_set(:BlogPageComment, Class.new(ActiveRecord::Base))
@@ -554,7 +554,7 @@ describe ActiveRecord::Base do
       create_tables(
         "posts", {}, {},
         "tags", {}, {},
-        "posts_tags", {:id => false}, { :post_id => {}, :tag_id => {}}
+        "posts_tags", {:id => false}, { :post_id => { foreign_key: true}, :tag_id => { foreign_key: true}}
       )
       class Post < ActiveRecord::Base ; end
       class Tag < ActiveRecord::Base ; end
@@ -572,7 +572,7 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "types", {}, {},
-        "posts", {}, {:type_id => {}}
+        "posts", {}, {:type_id => { foreign_key: true}}
       )
     end
     it "should define association normally if no existing method is defined" do
@@ -614,9 +614,9 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {}, :type => {coltype: :string} },
+        "comments", {}, { :post_id => { foreign_key: true}, :type => {coltype: :string} },
         "citers", {}, {},
-        "citations", {}, { :comment_id => {}, :citer_id => {}}
+        "citations", {}, { :comment_id => { foreign_key: true}, :citer_id => { foreign_key: true}}
       )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
@@ -643,7 +643,7 @@ describe ActiveRecord::Base do
       before(:each) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {} }
+          "comments", {}, { :post_id => { foreign_key: true} }
         )
         class Post < ActiveRecord::Base ; end
         class Comment < ActiveRecord::Base ; end
