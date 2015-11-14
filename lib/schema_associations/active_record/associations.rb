@@ -80,6 +80,7 @@ module SchemaAssociations
       def _load_schema_associations_associations #:nodoc:
         return if @schema_associations_associations_loaded
         @schema_associations_associations_loaded = true
+        return if abstract_class?
         return unless schema_associations_config.auto_create?
 
         reverse_foreign_keys.each do | foreign_key |
