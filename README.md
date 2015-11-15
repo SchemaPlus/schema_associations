@@ -358,6 +358,10 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 
 ## Release notes:
 
+### 1.2.4
+
+* Bug fix: Don't fail trying to do associations for abstract classes (mysql2 only).  [#11, #12] Thanks to [@dmeranda](https://github.com/dmeranda)
+
 ### 1.2.3
 
 * Use schema_plus_foreign_keys rather than all of schema_plus, to eliminate unneeded dependancies.  That limits us to AR >= 4.1 and ruby >= 2.1
