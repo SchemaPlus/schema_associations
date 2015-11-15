@@ -637,6 +637,27 @@ describe ActiveRecord::Base do
   end
 
 
+  context "with abstract base classes" do
+    before(:each) do
+      create_tables(
+        "posts", {}, {}
+      )
+      class PostBase < ActiveRecord::Base ; self.abstract_class = true ; end
+      class Post < PostBase ; end
+    end
+
+    it "should skip abstract classes" do
+      expect { PostBase.table_name }.to_not raise_error
+      expect( PostBase.table_name ).to be_nil
+      expect( !! PostBase.table_exists? ).to eq(false)
+    end
+
+    it "should work with classes derived from abstract classes" do
+      expect( Post.table_name ).to eq("posts")
+      expect( !! Post.table_exists? ).to eq(true)
+    end
+  end
+
   if defined? ::ActiveRecord::Relation
 
     context "regarding relations" do
