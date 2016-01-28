@@ -134,6 +134,13 @@ module SchemaAssociations
 
         when :has_one_or_many
           opts = {:class_name => referencing_class_name, :foreign_key => column_name, :inverse_of => names[:belongs_to]}
+
+          # If the foreign key is declared to cascade deletes in the database, do the same in Rails.
+          case fk.on_delete
+          when :cascade then
+            opts.merge!(:dependent => :destroy)
+          end
+
           # use connection.indexes and connection.colums rather than class
           # methods of the referencing class because using the class
           # methods would require getting the class -- which might trigger
