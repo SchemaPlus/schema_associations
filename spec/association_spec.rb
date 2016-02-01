@@ -11,8 +11,8 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {foreign_key: true} }
-      )
+        "comments", {}, { :post_id => {foreign_key: true, on_delete: :cascade} }
+                   )
       class Post < ActiveRecord::Base ; end
       class Comment < ActiveRecord::Base ; end
     end
@@ -51,6 +51,16 @@ describe ActiveRecord::Base do
       post = Post.create
       comment = Comment.create(:post => post)
       expect(comment.reload.post.id).to eq(post.id)
+    end
+
+    # MySQL does not support inline references specifications, so we skip this
+    # test for that database.
+    # Ref: http://dev.mysql.com/doc/refman/5.6/en/create-table.html
+    it "should tell post to run destroy on comments when delete is cascade", :mysql => :skip do
+      reflection = Post.reflect_on_association(:comments)
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:dependent]).to eq(:destroy)
     end
 
     it "should create has_many association" do
