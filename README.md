@@ -7,7 +7,6 @@ on the database schema.
 [![Gem Version](https://badge.fury.io/rb/schema_associations.svg)](http://badge.fury.io/rb/schema_associations)
 [![Build Status](https://secure.travis-ci.org/SchemaPlus/schema_associations.svg)](http://travis-ci.org/SchemaPlus/schema_associations)
 [![Coverage Status](https://img.shields.io/coveralls/SchemaPlus/schema_associations.svg)](https://coveralls.io/r/SchemaPlus/schema_associations?branch=master)
-[![Dependency Status](https://gemnasium.com/lomba/schema_associations.svg)](https://gemnasium.com/lomba/schema_associations)
 
 
 ## Overview
