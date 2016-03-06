@@ -3,7 +3,6 @@ require 'valuable'
 
 require 'schema_associations/version'
 require 'schema_associations/active_record/associations'
-require 'schema_associations/railtie' if defined?(Rails)
 
 module SchemaAssociations
 
@@ -108,12 +107,6 @@ module SchemaAssociations
     yield config
   end
 
-  def self.insert #:nodoc:
-    return if @inserted
-    @inserted = true
-    ::ActiveRecord::Base.extend SchemaAssociations::ActiveRecord::Associations
-  end
-
 end
 
-SchemaAssociations.insert unless defined? Rails::Railtie
+SchemaMonkey.register SchemaAssociations
