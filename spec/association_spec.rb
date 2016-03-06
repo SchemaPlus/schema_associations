@@ -47,12 +47,20 @@ describe ActiveRecord::Base do
       expect(comment.post.id).to eq(post.id)
     end
 
-    it "should create association if record retrieved using 'find'" do
+    it "should create direct association if record retrieved using 'find'" do
       post_id = 99
       comment_id = 22
       Post.connection.execute("INSERT INTO posts (id) VALUES (#{post_id})")
       Comment.connection.execute("INSERT INTO comments (id, post_id) VALUES (#{comment_id}, #{post_id})");
-      expect(Comment.find(comment_id).posts.first.id).to eq(post_id)
+      expect(Comment.find(comment_id).post.id).to eq(post_id)
+    end
+
+    it "should create reverse association if record retrieved using 'find'" do
+      post_id = 99
+      comment_id = 22
+      Post.connection.execute("INSERT INTO posts (id) VALUES (#{post_id})")
+      Comment.connection.execute("INSERT INTO comments (id, post_id) VALUES (#{comment_id}, #{post_id})");
+      expect(Post.find(post_id).comments.first.id).to eq(comment_id)
     end
 
     it "should create association when creating record" do
