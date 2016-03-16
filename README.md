@@ -26,7 +26,7 @@ associations each listing its inverse, such as
         has_many :comments, :inverse_of => :post
     end
 
-    class Comment < ActiveReocrd::Base
+    class Comment < ActiveRecord::Base
         belongs_to :post, :inverse_of => :comments
     end
 
