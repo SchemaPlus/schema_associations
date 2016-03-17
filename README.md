@@ -453,9 +453,13 @@ Code coverage results will be in coverage/index.html -- it should be at 100% cov
 
 ## Release notes:
 
-### 1.2.4
+### 1.2.5
 
 * Use schema_monkey rather than Railties.
+
+### 1.2.4
+
+* Bug fix: Don't fail trying to do associations for abstract classes (mysql2 only).  [#11, #12] Thanks to [@dmeranda](https://github.com/dmeranda)
 
 ### 1.2.3
 
