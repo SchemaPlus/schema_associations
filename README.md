@@ -21,37 +21,42 @@ defined using `belongs_to`, `has_one`, `has_many`, and
 definitions by hand.  In fact, for every relation, you need to define two
 associations each listing its inverse, such as
 
-    class Post < ActiveRecord::Base
-        has_many :comments, :inverse_of => :post
-    end
+```ruby
+class Post < ActiveRecord::Base
+    has_many :comments, inverse_of: :post
+end
 
-    class Comment < ActiveRecord::Base
-        belongs_to :post, :inverse_of => :comments
-    end
+class Comment < ActiveRecord::Base
+    belongs_to :post, inverse_of: :comments
+end
+```
 
 ....which isn't so DRY.
 
-Enter the SchemaAssociations gem.  It extends ActiveRecord to automatically
-define the appropriate associations based on foreign key constraints in the
-database.  SchemaAssociations builds on the
-[schema_plus](http://rubygems.org/gems/schema_plus) gem that automatically
-defines foreign key constraints.  So the common case is simple -- if you have
-this in your migration:
+Enter the SchemaAssociations gem.  It extends ActiveRecord to automatically define the appropriate associations based on foreign key constraints in the database.  
 
-    create_table :posts do |t|
-    end
+SchemaAssociations works particularly well with the
+[schema_auto_foreign_keys](http://github.com/SchemaPlus/schema_auto_foreign_keys) gem which automatically
+defines foreign key constraints.  So the common case is simple -- if you have this in your migration:
 
-    create_table :comments do |t|
-      t.integer post_id
-    end
+```ruby
+create_table :posts do |t|
+end
+
+create_table :comments do |t|
+    t.integer post_id
+end
+```
 
 Then all you need for your models is:
 
-    class Post < ActiveRecord::Base
-    end
+```ruby
+class Post < ActiveRecord::Base
+end
 
-    class Comment < ActiveRecord::Base
-    end
+class Comment < ActiveRecord::Base
+end
+```
 
 and SchemaAssociations defines the appropriate associations under the hood.
 
@@ -59,34 +64,30 @@ and SchemaAssociations defines the appropriate associations under the hood.
 
 You're always free to define associations yourself, if for example you want to
 pass special options.  SchemaAssociations won't clobber any existing
-definitions.
+definitions. 
 
-You can also control the behavior with various options, globally via
-SchemaAssociations::setup or per-model via
-SchemaAssociations::ActiveRecord#schema_associations, such as:
-
-    class Post < ActiveRecord::Base
-        schema_associations :concise_names => false
-    end
-
-See the [SchemaAssociations::Confg RDOC](http://rubydoc.info/gems/schema_associations/SchemaAssociations/Config) for the available options.
+You can also control the behavior with various options, via a global initializer and/or per-model.  See the [Configuration section](#configuration) for the available options.
 
 ### This seems cool, but I'm worried about too much automagic
 
 You can globally turn off automatic creation in
 `config/initializers/schema_associations.rb`:
 
-    SchemaAssociations.setup do |config|
-      config.auto_create = false
-    end
+```ruby
+SchemaAssociations.setup do |config|
+    config.auto_create = false
+end
+```
 
 Then in any model where you want automatic associations, just do
 
-    class Post < ActiveRecord::Base
-      schema_associations
-    end
+```ruby
+class Post < ActiveRecord::Base
+    schema_associations
+end
+```
 
-You can also pass options as per above.
+You can also pass options as described in [Configurtion](#configuration)
 
 ## Full Details
 
@@ -95,58 +96,70 @@ You can also pass options as per above.
 The common cases work entirely as you'd expect.  For a one-to-many
 relationship using standard naming conventions:
 
-    # migration:
+```ruby
+#
+# migration:
+#
+create_table :comments do |t|
+    t.integer post_id
+end
 
-    create_table :comments do |t|
-        t.integer post_id
-    end
+#
+# schema_associations defines:
+#
+class Post < ActiveRecord::Base
+    has_many :comments
+end
 
-    # schema_associations defines:
-
-    class Post < ActiveRecord::Base
-        has_many :comments
-    end
-
-    class Comment < ActiveReocrd::Base
-        belongs_to :post
-    end
+class Comment < ActiveReocrd::Base
+    belongs_to :post
+end
+```
 
 For a one-to-one relationship:
 
-    # migration:
+```ruby
+#
+# migration:
+#
+create_table :comments do |t|
+    t.integer post_id, index: :unique    # (using the :index option provided by schema_plus )
+end
 
-    create_table :comments do |t|
-        t.integer post_id, :index => :unique    # (using the :index option provided by schema_plus )
-    end
+#
+# schema_associations defines:
+#
+class Post < ActiveRecord::Base
+    has_one :comment
+end
 
-    # schema_associations defines:
-
-    class Post < ActiveRecord::Base
-        has_one :comment
-    end
-
-    class Comment < ActiveReocrd::Base
-        belongs_to :post
-    end
+class Comment < ActiveReocrd::Base
+    belongs_to :post
+end
+```
 
 And for many-to-many relationships:
 
-    # migration:
+```ruby
+#
+# migration:
+#
+create_table :groups_members do |t|
+    integer :group_id
+    integer :member_id
+end
 
-    create_table :groups_members do |t|
-        integer :group_id
-        integer :member_id
-    end
+#
+# schema_associations defines:
+#
+class Group < ActiveReocrd::Base
+    has_and_belongs_to_many :members
+end
 
-    # schema_associations defines:
-
-    class Group < ActiveReocrd::Base
-        has_and_belongs_to_many :members
-    end
-
-    class Member < ActiveRecord::Base
-        has_and_belongs_to_many :groups
-    end
+class Member < ActiveRecord::Base
+    has_and_belongs_to_many :groups
+end
+```
 
 ### Unusual names, multiple references
 
@@ -159,139 +172,167 @@ should make this clear...
 Suppose your company hires interns, and each intern is assigned a manager and
 a mentor, who are regular employees.
 
-    create_table :interns do |t|
-        t.integer :manager_id,      :references => :employees
-        t.integer :mentor_id,       :references => :employees
-    end
+```ruby
+create_table :interns do |t|
+    t.integer :manager_id,      references: :employees
+    t.integer :mentor_id,       references: :employees
+end
+```
 
 SchemaAssociations defines a `belongs_to` association for each reference,
 named according to the column:
 
-    class Intern < ActiveRecord::Base
-        belongs_to  :manager, :class_name => "Employee", :foreign_key => "manager_id"
-        belongs_to  :mentor,  :class_name => "Employee", :foreign_key => "mentor_id"
-    end
+```ruby
+class Intern < ActiveRecord::Base
+    belongs_to  :manager, class_name: "Employee", foreign_key: "manager_id"
+    belongs_to  :mentor,  class_name: "Employee", foreign_key: "mentor_id"
+end
+```
 
 And the corresponding `has_many` association each gets a suffix to indicate
 which one relation it refers to:
 
-    class Employee < ActiveRecord::Base
-        has_many :interns_as_manager, :class_name => "Intern", :foreign_key => "manager_id"
-        has_many :interns_as_mentor,  :class_name => "Intern", :foreign_key => "mentor_id"
-    end
+```ruby
+class Employee < ActiveRecord::Base
+    has_many :interns_as_manager, class_name: "Intern", foreign_key: "manager_id"
+    has_many :interns_as_mentor,  class_name: "Intern", foreign_key: "mentor_id"
+end
+```
 
 ### Special case for trees
 
 If your forward relation is named "parent", SchemaAssociations names the
 reverse relation "child" or "children".  That is, if you have:
 
-    create_table :nodes
-       t.integer :parent_id         # schema_plus assumes it's a reference to this table
-    end
+```ruby
+create_table :nodes
+    t.integer :parent_id         # schema_plus assumes it's a reference to this table
+end
+```
 
 Then SchemaAssociations will define
 
-    class Node < ActiveRecord::Base
-        belongs_to :parent, :class_name => "Node", :foreign_key => "parent_id"
-        has_many :children, :class_name => "Node", :foreign_key => "parent_id"
-    end
+```ruby
+class Node < ActiveRecord::Base
+    belongs_to :parent, class_name: "Node", foreign_key: "parent_id"
+    has_many :children, class_name: "Node", foreign_key: "parent_id"
+end
+```
 
 ### Concise names
 
 For modularity in your tables and classes, you might  use a common prefix for
-related objects.  For example, you may have widgets each of which has a color,
-and might have one base that has a top color and a bottom color, from the same
-set of colors.
+related objects.  For example, you may have widgets each of which has a color, and each widget might have one frob that has a top color and a bottom color--all from the same set of colors.
 
-    create_table :widget_colors |t|
-    end
+```ruby
+create_table :widget_colors |t|
+end
 
-    create_table :widgets do |t|
-        t.integer   :widget_color_id
-    end
+create_table :widgets do |t|
+    t.integer   :widget_color_id
+end
 
-    create_table :widget_base
-        t.integer :widget_id, :index => :unique
-        t.integer :top_widget_color_id,    :references => :widget_colors
-        t.integer :bottom_widget_color_id, :references => :widget_colors
-    end
+create_table :widget_frobs
+    t.integer :widget_id, index: :unique
+    t.integer :top_widget_color_id,    references: :widget_colors
+    t.integer :bottom_widget_color_id, references: :widget_colors
+end
+```
 
 Using the full name for the associations would make your code verbose and not
 quite DRY:
 
-    @widget.widget_color
-    @widget.widget_base.top_widget_color
+```ruby
+@widget.widget_color
+@widget.widget_frob.top_widget_color
+```
 
 Instead, by default, SchemaAssociations uses concise names: shared leading
 words are removed from the association name.  So instead of the above, your
 code looks like:
 
-    @widget.color
-    @widget.base.top_color
+```ruby
+@widget.color
+@widget.frob.top_color
+```
 
 i.e. these associations would be defined:
 
-    class WidgetColor < ActiveRecord::Base
-        has_many :widgets,         :class_name => "Widget",     :foreign_key => "widget_color_id"
-        has_many :bases_as_top,    :class_name => "WidgetBase", :foreign_key => "top_widget_color_id"
-        has_many :bases_as_bottom, :class_name => "WidgetBase", :foreign_key => "bottom_widget_color_id"
-    end
+```ruby
+class WidgetColor < ActiveRecord::Base
+    has_many :widgets,         class_name: "Widget",     foreign_key: "widget_color_id"
+    has_many :frobs_as_top,    class_name: "WidgetFrob", foreign_key: "top_widget_color_id"
+    has_many :frobs_as_bottom, class_name: "WidgetFrob", foreign_key: "bottom_widget_color_id"
+end
 
-    class Widget < ActiveRecord::Base
-        belongs_to :color, :class_name => "WidgetColor", :foreign_key => "widget_color_id"
-        has_one    :base,  :class_name => "WidgetBase",  :foreign_key => "widget_base_id"
-    end
+class Widget < ActiveRecord::Base
+    belongs_to :color, class_name: "WidgetColor", foreign_key: "widget_color_id"
+    has_one    :frob,  class_name: "WidgetFrob",  foreign_key: "widget_frob_id"
+end
 
-    class WidgetBase < ActiveRecord::Base
-        belongs_to :top_color,    :class_name => "WidgetColor", :foreign_key => "top_widget_color_id"
-        belongs_to :bottom_color, :class_name => "WidgetColor", :foreign_key => "bottom_widget_color_id"
-        belongs_to :widget,       :class_name => "Widget",      :foreign_key => "widget_id"
-    end
+class WidgetFrob < ActiveRecord::Base
+    belongs_to :top_color,    class_name: "WidgetColor", foreign_key: "top_widget_color_id"
+    belongs_to :bottom_color, class_name: "WidgetColor", foreign_key: "bottom_widget_color_id"
+    belongs_to :widget,       class_name: "Widget",      foreign_key: "widget_id"
+end
+```
 
 If you like the formality of using full names for the asociations, you can
-turn off concise names globally or per-model, see [SchemaAssociations::Config](http://rubydoc.info/gems/schema_associations/SchemaAssociations/Config)
+turn off concise names globally or per-model, see [Configuration](#configuration).
 
 ### Ordering `has_many` using `position`
 
 If the target of a `has_many` association has a column named `position`,
-SchemaAssociations will specify `:order => :position` for the association.
+SchemaAssociations will specify `order: :position` for the association.
 That is,
 
-    create_table :comments do |t|
-        t.integer post_id
-        t.integer position
-    end
+```ruby
+create_table :comments do |t|
+    t.integer post_id
+    t.integer position
+end
+```
 
 leads to
 
-    class Post < ActiveRecord::Base
-      has_many :comments, :order => :position
-    end
+```ruby
+class Post < ActiveRecord::Base
+    has_many :comments, order: :position
+end
+```
 
-## Table names and model class names
+## Table names, model class names, and modules
 
-SchemaAssociations determins the mode class name from the table name using the same convention (and helpers) that ActiveRecord uses.  But sometimes you might be doing things differently.  For example, in an engine you might have a prefix that goes in front of all table names, and the models might all be in a namespace.
+SchemaAssociations determins the mode class name from the table name using the same convention (and helpers) that ActiveRecord uses.  But sometimes you might be doing things differently.  For example, in an engine you might have a prefix that goes in front of all table names, and the models might all be namespaced in a module.
 
 To that end, SchemaAssociations lets you configure mappings from a table name prefix to a model class name prefix to use instead.  For example, suppose your database had tables:
 
-      hpy_campers
-      hpy_go_lucky
+```ruby
+hpy_campers
+hpy_go_lucky
+```
 
 The default model class names would be
 
-	  HpyCampers
-	  HpyGoLucky
-	
+```ruby
+HpyCampers
+HpyGoLucky
+```
+
 But if instead you wanted
 
-	  Happy::Campers
-	  Happy::GoLucky
-	
-You could set up this mapping in `config/initializers/schema_associations.rb`:
+```ruby
+Happy::Campers
+Happy::GoLucky
+```
+    
+you would define the mapping in the [configuration](#configuration):
 
-      SchemaPlus.setup do |config|
-          config.table_prefix_map["hpy_"] = "Happy::"
-      end
+```ruby
+SchemaPlus.setup do |config|
+    config.table_prefix_map["hpy_"] = "Happy::"
+end
+```
 
 Tables names that don't start with `hpy_` will continue to use the default determination.
 
@@ -315,6 +356,61 @@ SchemaAssociations defines the associations lazily, only creating them when
 they're first needed.  So you may need to search through the log file to find
 them all (and some may not be defined at all if they were never needed for the
 use cases that you logged).
+
+## Configuration
+
+You can configure options globally in an initializer such as `config/initializers/schema_associations.rb`, e.g.
+
+```ruby
+SchemaAssociations.setup do |config|
+  config.concise_names = false
+end
+```
+
+and/or override the options per-model, e.g.:
+
+```ruby
+class MyModel < ActiveRecord::Base
+  schema_associations.config concise_names: false
+end
+```
+
+Here's the full list of options, with their default values:
+
+```ruby
+SchemaAssociations.setup do |config|
+
+  # Enable/disable SchemaAssociations' automatic behavior
+  config.auto_create = true
+  
+  # Whether to use concise naming (strip out common prefixes from class names)
+  config.concise_names = true
+  
+  # List of association names to exclude from automatic creation.
+  # Value is a single name, an array of names, or nil.
+  config.except = nil
+  
+  # List of association names to include in automatic creation.
+  # Value is a single name, and array of names, or nil.
+  config.only = nil
+
+  # List of association types to exclude from automatic creation.
+  # Value is one or an array of :belongs_to, :has_many, :has_one, and/or
+  # :has_and_belongs_to_many, or nil.
+  config.except_type = nil
+
+  # List of association types to include in automatic creation.
+  # Value is one or an array of :belongs_to, :has_many, :has_one, and/or
+  # :has_and_belongs_to_many, or nil.
+  config.only_type = nil
+
+  # Hash whose keys are possible matches at the start of table names, and
+  # whose corresponding values are the prefix to use in front of class
+  # names.
+  config.table_prefix_map = {}
+end
+```
+
 
 ## Compatibility
 

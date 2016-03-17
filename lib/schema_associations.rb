@@ -16,7 +16,7 @@ module SchemaAssociations
   # or override them per-model, e.g.:
   #
   #     class MyModel < ActiveRecord::Base
-  #        schema_associations.config :concise_names => false
+  #        schema_associations :concise_names => false
   #     end
   #
   class Config < Valuable
@@ -73,7 +73,7 @@ module SchemaAssociations
     # names.
     has_value :table_prefix_map, :default => {}
 
-    def dup #:nodoc:
+    def dup # :nodoc:
       self.class.new(Hash[attributes.collect{ |key, val| [key, Valuable === val ?  val.class.new(val.attributes) : val] }])
     end
 
