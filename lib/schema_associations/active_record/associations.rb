@@ -70,7 +70,6 @@ module SchemaAssociations
 
         def _load_schema_associations_associations
           return if @schema_associations_associations_loaded
-          @schema_associations_associations_loaded = true
           return if abstract_class?
           return unless schema_associations_config.auto_create?
 
@@ -90,6 +89,8 @@ module SchemaAssociations
           foreign_keys.each do | foreign_key |
             _define_association(:belongs_to, foreign_key)
           end
+
+          @schema_associations_associations_loaded = true
         end
 
         def _define_association(macro, fk, referencing_table_name = nil)
