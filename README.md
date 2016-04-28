@@ -87,7 +87,7 @@ class Post < ActiveRecord::Base
 end
 ```
 
-You can also pass options as described in [Configurtion](#configuration)
+You can also pass options as described in [Configuration](#configuration)
 
 ## Full Details
 
@@ -303,7 +303,7 @@ end
 
 ## Table names, model class names, and modules
 
-SchemaAssociations determins the mode class name from the table name using the same convention (and helpers) that ActiveRecord uses.  But sometimes you might be doing things differently.  For example, in an engine you might have a prefix that goes in front of all table names, and the models might all be namespaced in a module.
+SchemaAssociations determines the model class name from the table name using the same convention (and helpers) that ActiveRecord uses.  But sometimes you might be doing things differently.  For example, in an engine you might have a prefix that goes in front of all table names, and the models might all be namespaced in a module.
 
 To that end, SchemaAssociations lets you configure mappings from a table name prefix to a model class name prefix to use instead.  For example, suppose your database had tables:
 
@@ -336,7 +336,7 @@ end
 
 Tables names that don't start with `hpy_` will continue to use the default determination.
 
-You can set up multiple mappings.  E.g. if you're using several engines they can each set up the mapping for their own moduels.
+You can set up multiple mappings.  E.g. if you're using several engines they can each set up the mapping for their own modules.
 
 You can set up a mapping from or to the empty string, in order to unconditionally add or remove prefixes from all model class names.
 
