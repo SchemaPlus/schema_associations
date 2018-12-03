@@ -7,6 +7,8 @@ describe ActiveRecord::Base do
     remove_all_models
   end
 
+  let(:pk_type) { Gem::Requirement.new('< 5.1').satisfied_by?(::ActiveRecord.version) ? :integer : :bigint }
+
   context "in basic case" do
     before(:each) do
       create_tables(
@@ -702,7 +704,7 @@ describe ActiveRecord::Base do
       table_defs.each_slice(3) do |table_name, opts, columns_with_options|
         ActiveRecord::Migration.create_table table_name, opts do |t|
           columns_with_options.each_pair do |column, options|
-            coltype = options.delete(:coltype) || :integer
+            coltype = options.delete(:coltype) || pk_type
             t.send coltype, column, options
           end
         end
