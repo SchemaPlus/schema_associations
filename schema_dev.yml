@@ -3,6 +3,8 @@ ruby:
 activerecord:
   - 4.2
   - 5.0
+  - 5.1
+  - 5.2
 db:
   - mysql2
   - postgresql
