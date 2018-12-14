@@ -570,6 +570,33 @@ describe ActiveRecord::Base do
     end
   end
 
+  context 'defining has_many through associations' do
+    before(:each) do
+      create_tables(
+          "users", {}, {},
+          "posts", {}, { :user_id => { foreign_key: true}},
+          "comments", {}, { :post_id => { foreign_key: true}},
+      )
+      class Post < ActiveRecord::Base; end
+      class Comment < ActiveRecord::Base; end
+      class User < ActiveRecord::Base
+        has_many :comments, :through => :posts
+      end
+    end
+
+    it 'should not error when accessing the through association' do
+      reflection = User.reflect_on_association(:posts)
+      expect(reflection).not_to be_nil
+
+      reflection = User.reflect_on_association(:comments)
+      expect(reflection).not_to be_nil
+      expect(reflection.macro).to eq(:has_many)
+      expect(reflection.options[:through]).to eq(:posts)
+
+      expect { User.new.comments }.to_not raise_error
+    end
+  end
+
   context "regarding existing methods" do
     before(:each) do
       create_tables(
