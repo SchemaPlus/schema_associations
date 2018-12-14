@@ -15,6 +15,11 @@ module SchemaAssociations
 
       module ClassMethods
 
+        def reflections(*args)
+          _load_schema_associations_associations
+          super
+        end
+
         def reflect_on_association(*args)
           _load_schema_associations_associations
           super
@@ -57,7 +62,6 @@ module SchemaAssociations
         #         schema_associations :concise_names => false, :except_type => :has_and_belongs_to_many
         #     end
         #
-        #
         def schema_associations(opts={})
           @schema_associations_config = SchemaAssociations.config.merge({:auto_create => true}.merge(opts))
         end
@@ -66,12 +70,25 @@ module SchemaAssociations
           @schema_associations_config ||= SchemaAssociations.config.dup
         end
 
+        %i[has_many has_one].each do |m|
+          define_method(m) do |name, *args|
+            if @schema_associations_associations_loaded
+              super name, *args
+            else
+              @schema_associations_deferred_associations ||= []
+              @schema_associations_deferred_associations.push({macro: m, name: name, args: args})
+            end
+          end
+        end
+
         private
 
         def _load_schema_associations_associations
           return if @schema_associations_associations_loaded
           return if abstract_class?
           return unless schema_associations_config.auto_create?
+
+          @schema_associations_associations_loaded = :loading
 
           reverse_foreign_keys.each do | foreign_key |
             if foreign_key.from_table =~ /^#{table_name}_(.*)$/ || foreign_key.from_table =~ /^(.*)_#{table_name}$/
@@ -88,6 +105,14 @@ module SchemaAssociations
 
           foreign_keys.each do | foreign_key |
             _define_association(:belongs_to, foreign_key)
+          end
+
+          (@schema_associations_deferred_associations || []).each do |a|
+            argstr = a[:args].inspect[1...-1] + ' # deferred association'
+            _create_association(a[:macro], a[:name], argstr, *a[:args])
+          end
+          if instance_variable_defined? :@schema_associations_deferred_associations
+            remove_instance_variable :@schema_associations_deferred_associations
           end
 
           @schema_associations_associations_loaded = true
@@ -158,7 +183,6 @@ module SchemaAssociations
             subclass.send :_create_association, macro, name, argstr, *args
           end
         end
-
 
         def _determine_association_names(reference_name, referencing_name, references_name)
 
