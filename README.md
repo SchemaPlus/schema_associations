@@ -205,7 +205,7 @@ If your forward relation is named "parent", SchemaAssociations names the
 reverse relation "child" or "children".  That is, if you have:
 
 ```ruby
-create_table :nodes
+create_table :nodes do |t|
     t.integer :parent_id         # schema_plus assumes it's a reference to this table
 end
 ```
@@ -225,14 +225,14 @@ For modularity in your tables and classes, you might  use a common prefix for
 related objects.  For example, you may have widgets each of which has a color, and each widget might have one frob that has a top color and a bottom color--all from the same set of colors.
 
 ```ruby
-create_table :widget_colors |t|
+create_table :widget_colors do |t|
 end
 
 create_table :widgets do |t|
     t.integer   :widget_color_id
 end
 
-create_table :widget_frobs
+create_table :widget_frobs do |t|
     t.integer :widget_id, index: :unique
     t.integer :top_widget_color_id,    references: :widget_colors
     t.integer :bottom_widget_color_id, references: :widget_colors
@@ -455,6 +455,10 @@ For more info, see [schema_dev](https://github.com/SchemaPlus/schema_dev)
 Code coverage results will be in coverage/index.html -- it should be at 100% coverage.
 
 ## Release notes:
+
+### 1.2.7
+
+* add in auto deferring of has_* :through associations manually defined on the model so they work in AR 5.1+ 
 
 ### 1.2.6
 
