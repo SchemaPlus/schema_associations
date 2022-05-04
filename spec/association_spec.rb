@@ -7,8 +7,6 @@ describe ActiveRecord::Base do
     remove_all_models
   end
 
-  let(:pk_type) { Gem::Requirement.new('< 5.1').satisfied_by?(::ActiveRecord.version) ? :integer : :bigint }
-
   context "in basic case" do
     before(:each) do
       create_tables(
@@ -359,11 +357,7 @@ describe ActiveRecord::Base do
       expect(reflection.options[:class_name]).to eq("Comment")
       expect(reflection.options[:foreign_key]).to eq("post_id")
       expect(reflection.options[:inverse_of]).to eq(:post)
-      if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-        expect(reflection.options[:order]).to be_nil
-      else
-        expect(reflection.scope).to be_nil
-      end
+      expect(reflection.scope).to be_nil
     end
   end
 
@@ -383,14 +377,10 @@ describe ActiveRecord::Base do
       expect(reflection.options[:class_name]).to eq("Comment")
       expect(reflection.options[:foreign_key]).to eq("post_id")
       expect(reflection.options[:inverse_of]).to eq(:post)
-      if ::ActiveRecord::VERSION::MAJOR.to_i < 4
-        expect(reflection.options[:order].to_s).to eq("position")
-      else
-        expect(reflection.scope).not_to be_nil
-        scope_tester = Object.new
-        expect(scope_tester).to receive(:order).with(:position)
-        scope_tester.instance_exec(&reflection.scope)
-      end
+      expect(reflection.scope).not_to be_nil
+      scope_tester = Object.new
+      expect(scope_tester).to receive(:order).with(:position)
+      scope_tester.instance_exec(&reflection.scope)
     end
   end
 
@@ -729,10 +719,10 @@ describe ActiveRecord::Base do
         ActiveRecord::Migration.drop_table table, force: :cascade
       end
       table_defs.each_slice(3) do |table_name, opts, columns_with_options|
-        ActiveRecord::Migration.create_table table_name, opts do |t|
+        ActiveRecord::Migration.create_table table_name, **opts do |t|
           columns_with_options.each_pair do |column, options|
-            coltype = options.delete(:coltype) || pk_type
-            t.send coltype, column, options
+            coltype = options.delete(:coltype) || :bigint
+            t.send coltype, column, **options
           end
         end
       end

@@ -5,7 +5,7 @@ module SchemaAssociations
 
     module Relation
 
-      def initialize(klass, *args)
+      def initialize(klass, *args, **kwargs)
         klass.send :_load_schema_associations_associations unless klass.nil?
         super
       end
@@ -71,12 +71,12 @@ module SchemaAssociations
         end
 
         %i[has_many has_one].each do |m|
-          define_method(m) do |name, *args|
+          define_method(m) do |name, *args, **options|
             if @schema_associations_associations_loaded
-              super name, *args
+              super name, *args, **options
             else
               @schema_associations_deferred_associations ||= []
-              @schema_associations_deferred_associations.push({macro: m, name: name, args: args})
+              @schema_associations_deferred_associations.push({macro: m, name: name, args: args, options: options})
             end
           end
         end
@@ -109,7 +109,7 @@ module SchemaAssociations
 
           (@schema_associations_deferred_associations || []).each do |a|
             argstr = a[:args].inspect[1...-1] + ' # deferred association'
-            _create_association(a[:macro], a[:name], argstr, *a[:args])
+            _create_association(a[:macro], a[:name], argstr, *a[:args], **a[:options])
           end
           if instance_variable_defined? :@schema_associations_deferred_associations
             remove_instance_variable :@schema_associations_deferred_associations
@@ -170,17 +170,17 @@ module SchemaAssociations
           end
           argstr += opts.inspect[1...-1]
           if (_filter_association(macro, name) && !_method_exists?(name))
-            _create_association(macro, name, argstr, scope_block, opts.dup)
+            _create_association(macro, name, argstr, scope_block, **opts.dup)
           end
         end
 
-        def _create_association(macro, name, argstr, *args)
+        def _create_association(macro, name, argstr, *args, **options)
           logger.debug "[schema_associations] #{self.name || self.from_table.classify}.#{macro} #{name.inspect}, #{argstr}"
-          send macro, name, *args
+          send macro, name, *args, **options
           case
           when respond_to?(:subclasses) then subclasses
           end.each do |subclass|
-            subclass.send :_create_association, macro, name, argstr, *args
+            subclass.send :_create_association, macro, name, argstr, *args, **options
           end
         end
 

@@ -1,6 +1,5 @@
 require 'simplecov'
-require 'simplecov-gem-profile'
-SimpleCov.start "gem"
+SimpleCov.start
 
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
