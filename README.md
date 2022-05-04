@@ -428,6 +428,7 @@ SchemaAssociations is tested on all combinations of:
     
 Notes:
 
+* As for version 1.3.0, rails < 5.2 and ruby < 2.5 are no longer supported
 * As of version 1.2.3, rails < 4.1 and ruby < 2.1 are no longer supported
 * As of version 1.2.0, ruby 1.9.2 is no longer supported.
 * As of version 1.0.0, ruby 1.8.7 and rails < 3.2 are no longer supported.
@@ -443,6 +444,11 @@ or in a Gemfile
     gem "schema_associations"
 
 ## Release notes:
+
+### 1.3.0
+
+* drop AR < 5.2, add AR 6.0
+* drop Ruby < 2.5, add Ruby 3.0
 
 ### 1.2.7
 
