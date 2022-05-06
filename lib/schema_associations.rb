@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'schema_plus_foreign_keys'
 require 'valuable'
 
