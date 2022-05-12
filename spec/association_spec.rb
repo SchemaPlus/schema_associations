@@ -3,19 +3,24 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe ActiveRecord::Base do
+  def stub_model(name, base = ActiveRecord::Base, &block)
+    klass = Class.new(base)
 
-  after(:each) do
-    remove_all_models
+    if block_given?
+      klass.instance_eval(&block)
+    end
+
+    stub_const(name, klass)
   end
 
   context "in basic case" do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {foreign_key: true} }
+        "comments", {}, { post_id: {foreign_key: true} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
 
     it "should create belongs_to association when reflecting on it" do
@@ -44,13 +49,13 @@ describe ActiveRecord::Base do
 
     it "should create association when accessing it" do
       post = Post.create
-      comment = Comment.create(:post_id => post.id)
+      comment = Comment.create(post_id: post.id)
       expect(comment.post.id).to eq(post.id)
     end
 
     it "should create association when creating record" do
       post = Post.create
-      comment = Comment.create(:post => post)
+      comment = Comment.create(post: post)
       expect(comment.reload.post.id).to eq(post.id)
     end
 
@@ -73,11 +78,11 @@ describe ActiveRecord::Base do
         "owners", {}, {},
         "colors", {}, {},
         "widgets", {}, {
-          :owner_id => { foreign_key: true },
+          owner_id: { foreign_key: true },
         },
-        "parts", {}, { :widget_id => { foreign_key: true } },
-        "manifests", {}, { :widget_id => { foreign_key: true, :index => {:unique => true}} },
-        "colors_widgets", {:id => false}, { :widget_id => { foreign_key: true}, :color_id => { foreign_key: true} }
+        "parts", {}, { widget_id: { foreign_key: true } },
+        "manifests", {}, { widget_id: { foreign_key: true, index: {unique: true}} },
+        "colors_widgets", {id: false}, { widget_id: { foreign_key: true}, color_id: { foreign_key: true} }
       )
     end
 
@@ -92,78 +97,78 @@ describe ActiveRecord::Base do
     end
 
     it "should default as expected" do
-      class Widget < ActiveRecord::Base ; end
-      check_reflections(:owner => true, :colors => true, :parts => true, :manifest => true)
+      stub_model('Widget')
+      check_reflections(owner: true, colors: true, parts: true, manifest: true)
     end
 
     it "should respect :only" do
-      class Widget < ActiveRecord::Base
-        schema_associations :only => :owner
+      stub_model('Widget') do
+        schema_associations only: :owner
       end
-      check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
+      check_reflections(owner: true, colors: false, parts: false, manifest: false)
     end
 
     it "should respect :except" do
-      class Widget < ActiveRecord::Base
-        schema_associations :except => :owner
+      stub_model('Widget') do
+        schema_associations except: :owner
       end
-      check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
+      check_reflections(owner: false, colors: true, parts: true, manifest: true)
     end
 
     it "should respect :only_type :belongs_to" do
-      class Widget < ActiveRecord::Base
-        schema_associations :only_type => :belongs_to
+      stub_model('Widget') do
+        schema_associations only_type: :belongs_to
       end
-      check_reflections(:owner => true, :colors => false, :parts => false, :manifest => false)
+      check_reflections(owner: true, colors: false, parts: false, manifest: false)
     end
 
     it "should respect :except_type :belongs_to" do
-      class Widget < ActiveRecord::Base
-        schema_associations :except_type => :belongs_to
+      stub_model('Widget') do
+        schema_associations except_type: :belongs_to
       end
-      check_reflections(:owner => false, :colors => true, :parts => true, :manifest => true)
+      check_reflections(owner: false, colors: true, parts: true, manifest: true)
     end
 
     it "should respect :only_type :has_many" do
-      class Widget < ActiveRecord::Base
-        schema_associations :only_type => :has_many
+      stub_model('Widget') do
+        schema_associations only_type: :has_many
       end
-      check_reflections(:owner => false, :colors => false, :parts => true, :manifest => false)
+      check_reflections(owner: false, colors: false, parts: true, manifest: false)
     end
 
     it "should respect :except_type :has_many" do
-      class Widget < ActiveRecord::Base
-        schema_associations :except_type => :has_many
+      stub_model('Widget') do
+        schema_associations except_type: :has_many
       end
-      check_reflections(:owner => true, :colors => true, :parts => false, :manifest => true)
+      check_reflections(owner: true, colors: true, parts: false, manifest: true)
     end
 
     it "should respect :only_type :has_one" do
-      class Widget < ActiveRecord::Base
-        schema_associations :only_type => :has_one
+      stub_model('Widget') do
+        schema_associations only_type: :has_one
       end
-      check_reflections(:owner => false, :colors => false, :parts => false, :manifest => true)
+      check_reflections(owner: false, colors: false, parts: false, manifest: true)
     end
 
     it "should respect :except_type :has_one" do
-      class Widget < ActiveRecord::Base
-        schema_associations :except_type => :has_one
+      stub_model('Widget') do
+        schema_associations except_type: :has_one
       end
-      check_reflections(:owner => true, :colors => true, :parts => true, :manifest => false)
+      check_reflections(owner: true, colors: true, parts: true, manifest: false)
     end
 
     it "should respect :only_type :has_and_belongs_to_many" do
-      class Widget < ActiveRecord::Base
-        schema_associations :only_type => :has_and_belongs_to_many
+      stub_model('Widget') do
+        schema_associations only_type: :has_and_belongs_to_many
       end
-      check_reflections(:owner => false, :colors => true, :parts => false, :manifest => false)
+      check_reflections(owner: false, colors: true, parts: false, manifest: false)
     end
 
     it "should respect :except_type :has_and_belongs_to_many" do
-      class Widget < ActiveRecord::Base
-        schema_associations :except_type => :has_and_belongs_to_many
+      stub_model('Widget') do
+        schema_associations except_type: :has_and_belongs_to_many
       end
-      check_reflections(:owner => true, :colors => false, :parts => true, :manifest => true)
+      check_reflections(owner: true, colors: false, parts: true, manifest: true)
     end
 
   end
@@ -173,12 +178,12 @@ describe ActiveRecord::Base do
       with_associations_auto_create(true) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {foreign_key: true} }
+          "comments", {}, { post_id: {foreign_key: true} }
         )
-        class Post < ActiveRecord::Base
-          schema_associations :auto_create => false
+        stub_model('Post') do
+          schema_associations auto_create: false
         end
-        class Comment < ActiveRecord::Base ; end
+        stub_model('Comment')
         expect(Post.reflect_on_association(:comments)).to be_nil
         expect(Comment.reflect_on_association(:post)).not_to be_nil
       end
@@ -189,12 +194,12 @@ describe ActiveRecord::Base do
       with_associations_auto_create(false) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {foreign_key: true} }
+          "comments", {}, { post_id: {foreign_key: true} }
         )
-        class Post < ActiveRecord::Base
-          schema_associations :auto_create => true
+        stub_model('Post') do
+          schema_associations auto_create: true
         end
-        class Comment < ActiveRecord::Base ; end
+        stub_model('Comment')
         expect(Post.reflect_on_association(:comments)).not_to be_nil
         expect(Comment.reflect_on_association(:post)).to be_nil
       end
@@ -204,12 +209,12 @@ describe ActiveRecord::Base do
       with_associations_auto_create(false) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => {foreign_key: true} }
+          "comments", {}, { post_id: {foreign_key: true} }
         )
-        class Post < ActiveRecord::Base
+        stub_model('Post') do
           schema_associations
         end
-        class Comment < ActiveRecord::Base ; end
+        stub_model('Comment')
         expect(Post.reflect_on_association(:comments)).not_to be_nil
         expect(Comment.reflect_on_association(:post)).to be_nil
       end
@@ -221,10 +226,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {foreign_key: true, :index => { :unique => true} } }
+        "comments", {}, { post_id: {foreign_key: true, index: { unique: true} } }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
     it "should create has_one association" do
       reflection = Post.reflect_on_association(:comment)
@@ -248,10 +253,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :subject_post_id => { foreign_key: { references: "posts" }} }
+        "comments", {}, { subject_post_id: { foreign_key: { references: "posts" }} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
     it "should name belongs_to according to column" do
       reflection = Comment.reflect_on_association(:subject_post)
@@ -276,10 +281,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_cited => { foreign_key: {references: "posts" }} }
+        "comments", {}, { post_cited: { foreign_key: {references: "posts" }} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
     it "should name belongs_to according to column" do
       reflection = Comment.reflect_on_association(:post_cited)
@@ -304,10 +309,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :subject => {foreign_key: { references: "posts" }} }
+        "comments", {}, { subject: {foreign_key: { references: "posts" }} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
     it "should name belongs_to according to column" do
       reflection = Comment.reflect_on_association(:subject)
@@ -329,13 +334,18 @@ describe ActiveRecord::Base do
   end
 
   it "maps table prefix" do
-    with_associations_config(:table_prefix_map => { "wooga_" => "Happy"} ) do
+    with_associations_config(table_prefix_map: { "wooga_" => "Happy"} ) do
       create_tables(
         "wooga_posts", {}, {},
-        "wooga_comments", {}, { :wooga_post_id => { foreign_key: true} }
+        "wooga_comments", {}, { wooga_post_id: { foreign_key: true} }
       )
-      class HappyPost < ActiveRecord::Base ; self.table_name = 'wooga_posts' ; end
-      class HappyComment < ActiveRecord::Base ; self.table_name = 'wooga_comments' ; end
+      stub_model('HappyPost') do
+        self.table_name = 'wooga_posts'
+      end
+      stub_model('HappyComment') do
+        self.table_name = 'wooga_comments'
+      end
+
       # Kernel.warn HappyPost.reflect_on_all_associations.inspect
       expect(HappyComment.reflect_on_association(:post).class_name).to eq("HappyPost")
       expect(HappyPost.reflect_on_association(:comments).class_name).to eq("HappyComment")
@@ -346,10 +356,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => { foreign_key: true} }
+        "comments", {}, { post_id: { foreign_key: true} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
     it "should create unordered has_many association" do
       reflection = Post.reflect_on_association(:comments)
@@ -366,10 +376,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {foreign_key: true}, :position => {} }
+        "comments", {}, { post_id: {foreign_key: true}, position: {} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Comment')
     end
     it "should create ordered has_many association" do
       reflection = Post.reflect_on_association(:comments)
@@ -389,10 +399,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {}, :position => {} }
+        "comments", {}, { post_id: {}, position: {} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base
+      stub_model('Post')
+      stub_model('Comment') do
         scope :simple_scope, lambda { order(:id) }
       end
     end
@@ -406,10 +416,10 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => {}, :position => {} }
+        "comments", {}, { post_id: {}, position: {} }
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base
+      stub_model('Post')
+      stub_model('Comment') do
         scope :simple_scope, lambda { order(:id).includes(:post) }
       end
     end
@@ -425,21 +435,21 @@ describe ActiveRecord::Base do
 
     before(:each) do
       create_tables(
-        "nodes", {}, { :parent_id => { foreign_key: true} }
+        "nodes", {}, { parent_id: { foreign_key: true} }
       )
     end
 
     it "should use children as the inverse of parent" do
-      class Node < ActiveRecord::Base ; end
+      stub_model('Node')
       reflection = Node.reflect_on_association(:children)
       expect(reflection).not_to be_nil
     end
 
     it "should use child as the singular inverse of parent" do
       migration.suppress_messages do
-        migration.add_index(:nodes, :parent_id, :unique => true)
+        migration.add_index(:nodes, :parent_id, unique: true)
       end
-      class Node < ActiveRecord::Base ; end
+      stub_model('Node')
       reflection = Node.reflect_on_association(:child)
       expect(reflection).not_to be_nil
     end
@@ -451,32 +461,32 @@ describe ActiveRecord::Base do
     def prefix_one
       create_tables(
         "posts", {}, {},
-        "post_comments", {}, { :post_id => { foreign_key: true} }
+        "post_comments", {}, { post_id: { foreign_key: true} }
       )
-      Object.const_set(:Post, Class.new(ActiveRecord::Base))
-      Object.const_set(:PostComment, Class.new(ActiveRecord::Base))
+      stub_model('Post')
+      stub_model('PostComment')
     end
 
     def suffix_one
       create_tables(
         "posts", {}, {},
-        "comment_posts", {}, { :post_id => { foreign_key: true} }
+        "comment_posts", {}, { post_id: { foreign_key: true} }
       )
-      Object.const_set(:Post, Class.new(ActiveRecord::Base))
-      Object.const_set(:CommentPost, Class.new(ActiveRecord::Base))
+      stub_model('Post')
+      stub_model('PostComment')
     end
 
     def prefix_both
       create_tables(
         "blog_page_posts", {}, {},
-        "blog_page_comments", {}, { :blog_page_post_id => { foreign_key: true} }
+        "blog_page_comments", {}, { blog_page_post_id: { foreign_key: true} }
       )
-      Object.const_set(:BlogPagePost, Class.new(ActiveRecord::Base))
-      Object.const_set(:BlogPageComment, Class.new(ActiveRecord::Base))
+      stub_model('BlogPagePost')
+      stub_model('BlogPageComment')
     end
 
     it "should use concise association name for one prefix" do
-      with_associations_config(:auto_create => true, :concise_names => true) do
+      with_associations_config(auto_create: true, concise_names: true) do
         prefix_one
         reflection = Post.reflect_on_association(:comments)
         expect(reflection).not_to be_nil
@@ -488,7 +498,7 @@ describe ActiveRecord::Base do
     end
 
     it "should use concise association name for one suffix" do
-      with_associations_config(:auto_create => true, :concise_names => true) do
+      with_associations_config(auto_create: true, concise_names: true) do
         suffix_one
         reflection = Post.reflect_on_association(:comments)
         expect(reflection).not_to be_nil
@@ -500,7 +510,7 @@ describe ActiveRecord::Base do
     end
 
     it "should use concise association name for shared prefixes" do
-      with_associations_config(:auto_create => true, :concise_names => true) do
+      with_associations_config(auto_create: true, concise_names: true) do
         prefix_both
         reflection = BlogPagePost.reflect_on_association(:comments)
         expect(reflection).not_to be_nil
@@ -512,7 +522,7 @@ describe ActiveRecord::Base do
     end
 
     it "should use full names and not concise names when so configured" do
-      with_associations_config(:auto_create => true, :concise_names => false) do
+      with_associations_config(auto_create: true, concise_names: false) do
         prefix_one
         reflection = Post.reflect_on_association(:post_comments)
         expect(reflection).not_to be_nil
@@ -526,7 +536,7 @@ describe ActiveRecord::Base do
     end
 
     it "should use concise names and not full names when so configured" do
-      with_associations_config(:auto_create => true, :concise_names => true) do
+      with_associations_config(auto_create: true, concise_names: true) do
         prefix_one
         reflection = Post.reflect_on_association(:comments)
         expect(reflection).not_to be_nil
@@ -547,10 +557,10 @@ describe ActiveRecord::Base do
       create_tables(
         "posts", {}, {},
         "tags", {}, {},
-        "posts_tags", {:id => false}, { :post_id => { foreign_key: true}, :tag_id => { foreign_key: true}}
+        "posts_tags", {id: false}, { post_id: { foreign_key: true}, tag_id: { foreign_key: true}}
       )
-      class Post < ActiveRecord::Base ; end
-      class Tag < ActiveRecord::Base ; end
+      stub_model('Post')
+      stub_model('Tag')
     end
     it "should create has_and_belongs_to_many association" do
       reflection = Post.reflect_on_association(:tags)
@@ -565,13 +575,13 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
           "users", {}, {},
-          "posts", {}, { :user_id => { foreign_key: true}},
-          "comments", {}, { :post_id => { foreign_key: true}},
+          "posts", {}, { user_id: { foreign_key: true}},
+          "comments", {}, { post_id: { foreign_key: true}},
       )
-      class Post < ActiveRecord::Base; end
-      class Comment < ActiveRecord::Base; end
-      class User < ActiveRecord::Base
-        has_many :comments, :through => :posts
+      stub_model('Post')
+      stub_model('Comment')
+      stub_model('User') do
+        has_many :comments, through: :posts
       end
     end
 
@@ -592,37 +602,37 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "types", {}, {},
-        "posts", {}, {:type_id => { foreign_key: true}}
+        "posts", {}, {type_id: { foreign_key: true}}
       )
     end
     it "should define association normally if no existing method is defined" do
-      class Type < ActiveRecord::Base ; end
+      stub_model('Type')
       expect(Type.reflect_on_association(:posts)).not_to be_nil # sanity check for this context
     end
     it "should not define association over existing public method" do
-      class Type < ActiveRecord::Base
-        def posts
+      stub_model('Type') do
+        define_method(:posts) do
           :existing
         end
       end
       expect(Type.reflect_on_association(:posts)).to be_nil
     end
     it "should not define association over existing private method" do
-      class Type < ActiveRecord::Base
-        private
-        def posts
+      stub_model('Type') do
+        define_method(:posts) do
           :existing
         end
+        private :posts
       end
       expect(Type.reflect_on_association(:posts)).to be_nil
     end
     it "should define association :type over (deprecated) kernel method" do
-      class Post < ActiveRecord::Base ; end
+      stub_model('Post')
       expect(Post.reflect_on_association(:type)).not_to be_nil
     end
     it "should not define association :type over model method" do
-      class Post < ActiveRecord::Base
-        def type
+      stub_model('Post') do
+        define_method(:type) do
           :existing
         end
       end
@@ -634,16 +644,16 @@ describe ActiveRecord::Base do
     before(:each) do
       create_tables(
         "posts", {}, {},
-        "comments", {}, { :post_id => { foreign_key: true}, :type => {coltype: :string} },
+        "comments", {}, { post_id: { foreign_key: true}, type: {coltype: :string} },
         "citers", {}, {},
-        "citations", {}, { :comment_id => { foreign_key: true}, :citer_id => { foreign_key: true}}
+        "citations", {}, { comment_id: { foreign_key: true}, citer_id: { foreign_key: true}}
       )
-      class Post < ActiveRecord::Base ; end
-      class Comment < ActiveRecord::Base ; end
-      class Citation < ActiveRecord::Base ; end
-      class SubComment < Comment ; end
-      class OwnComment < Comment
-        has_one :citer, :through => :citations
+      stub_model('Post')
+      stub_model('Comment')
+      stub_model('Citation')
+      stub_model('SubComment', Comment)
+      stub_model('OwnComment', Comment) do
+        has_one :citer, through: :citations
       end
     end
 
@@ -662,8 +672,10 @@ describe ActiveRecord::Base do
       create_tables(
         "posts", {}, {}
       )
-      class PostBase < ActiveRecord::Base ; self.abstract_class = true ; end
-      class Post < PostBase ; end
+      stub_model('PostBase') do
+        self.abstract_class = true
+      end
+      stub_model('Post', PostBase)
     end
 
     it "should skip abstract classes" do
@@ -684,10 +696,10 @@ describe ActiveRecord::Base do
       before(:each) do
         create_tables(
           "posts", {}, {},
-          "comments", {}, { :post_id => { foreign_key: true} }
+          "comments", {}, { post_id: { foreign_key: true} }
         )
-        class Post < ActiveRecord::Base ; end
-        class Comment < ActiveRecord::Base ; end
+        stub_model('Post')
+        stub_model('Comment')
       end
 
       it "should define associations before needed by relation" do
@@ -699,7 +711,7 @@ describe ActiveRecord::Base do
   protected
 
   def with_associations_auto_create(value, &block)
-    with_associations_config(:auto_create => value, &block)
+    with_associations_config(auto_create: value, &block)
   end
 
   def with_associations_config(opts, &block)
@@ -716,7 +728,7 @@ describe ActiveRecord::Base do
 
   def create_tables(*table_defs)
     ActiveRecord::Migration.suppress_messages do
-      ActiveRecord::Base.connection.tables_only.each do |table|
+      ActiveRecord::Base.connection.tables.sort.each do |table|
         ActiveRecord::Migration.drop_table table, force: :cascade
       end
       table_defs.each_slice(3) do |table_name, opts, columns_with_options|

@@ -20,12 +20,12 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version = '>= 2.5'
 
-  gem.add_dependency 'activerecord', '>= 5.2', '< 6.1'
-  gem.add_dependency 'schema_plus_foreign_keys', '~> 1.0.0'
+  gem.add_dependency 'activerecord', '>= 5.2', '< 7.1'
+  gem.add_dependency 'schema_plus_foreign_keys', '~> 1.1.0'
   gem.add_dependency 'valuable'
 
   gem.add_development_dependency 'bundler'
   gem.add_development_dependency 'rake', '~> 13.0'
   gem.add_development_dependency 'rspec', '~> 3.0'
-  gem.add_development_dependency 'schema_dev', '~> 4.1'
+  gem.add_development_dependency 'schema_dev', '~> 4.2.0'
 end

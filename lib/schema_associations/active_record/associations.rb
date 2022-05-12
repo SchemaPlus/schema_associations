@@ -274,7 +274,7 @@ module SchemaAssociations
         end
 
         def _method_exists?(name)
-          method_defined?(name) || private_method_defined?(name) and not (name == :type && [Object, Kernel].include?(instance_method(:type).owner))
+          method_defined?(name) || private_method_defined?(name)
         end
 
       end
