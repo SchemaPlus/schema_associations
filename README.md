@@ -453,10 +453,18 @@ or in a Gemfile
 
 ## Release notes:
 
+### 1.4.0
+
+* Add AR 6.1 and 7.0
+* Add Ruby 3.1
+* drop schema_plus_compatibiltiy dependency (indirect through schema_plus_foreign_keys update)
+
 ### 1.3.0
 
-* drop AR < 5.2, add AR 6.0
-* drop Ruby < 2.5, add Ruby 3.0
+* add AR 6.0
+* add Ruby 3.0
+* drop AR < 5.2
+* drop Ruby < 2.5
 
 ### 1.2.7
 
